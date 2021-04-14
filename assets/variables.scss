@@ -1,0 +1,22 @@
+// Ref: https://github.com/nuxt-community/vuetify-module#customvariables
+//
+// The variables you want to modify
+// $font-size-root: 20px;
+
+$body-font-family: "Montserrat";
+$text-field-filled-border-radius: 10px !important;
+// $primary-background: "linear-gradient(218.6deg, #78DEC6 10.02%, #32B395 79.47%)";
+
+@import "~vuetify/src/styles/styles.sass";
+
+$font-weights: map-deep-merge(
+  (
+    "thin": 100,
+    "light": 300,
+    "regular": 400,
+    "medium": 600,
+    "bold": 700,
+    "black": 900,
+  ),
+  $font-weights
+);
