@@ -17,7 +17,6 @@
       </v-col>
       <v-col cols="1">
         <v-menu left offset-y>
-          // eslint-disable-next-line vue/v-slot-style
           <template v-slot:activator="{ on, attrs }">
             <v-btn icon color="primary" v-bind="attrs" v-on="on">
               <v-icon>mdi-dots-vertical</v-icon>

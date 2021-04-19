@@ -47,8 +47,8 @@ export interface User {
   profileImgUrl: string;
   bio: string;
   location: string;
-  latitude: Number,
-  longitude: Number,
+  latitude: number;
+  longitude: number;
   profession: string;
   coverUrl: string;
   password: string /* Password */;
