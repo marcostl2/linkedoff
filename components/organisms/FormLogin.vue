@@ -84,11 +84,25 @@ export default Vue.extend({
         .signInWithEmailAndPassword(this.form.email, this.form.password)
         .then((data) => {
           const ref = this.$fire.database.ref(`users/${data.user!.uid}`);
+          const uid = data.user!.uid
 
           ref.on("value", (snapshot) => {
             const data = snapshot.val();
 
-            user.create(data as any);
+            const payload = {
+              name: data.name,
+              email: data.email,
+              password: data.password,
+              profileImgUrl: data.profileImgUrl,
+              bio: data.bio,
+              coverUrl: data.coverUrl,
+              // formation: [],
+              // techs: [],
+              // connections: [],
+            };
+
+            user.create({...payload, uid: uid} as any);
+
             this.loading = !this.loading;
             this.$router.push("/");
           });

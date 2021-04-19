@@ -1,19 +1,28 @@
 <template>
   <div>
+    <p>{{ nickname }}</p>
     <v-card class="pa-0" max-width="50rem">
       <div class="profile-cover"></div>
       <v-container class="py-12 px-5 profile-container d-flex flex-column">
         <ProfileImg />
         <v-row>
           <v-col class="d-flex flex-column">
-            <h2>Harold Macgroove</h2>
-            <span>Engenheiro QUimico</span>
-            <span>Altamira</span>
+            <h2>{{ this.form.name }}</h2>
+            <span v-if="this.form.profession">{{ this.form.profession }}</span>
+            <span v-else>Desempregado</span>
+            <span v-if="this.form.location"
+              >{{this.form.location}}</span
+            >
+            <span v-else>Sem acesso a localização</span>
           </v-col>
           <v-col align="end">
             <v-btn color="primary" @click="dialog = !dialog">
               Editar perfil
               <v-icon class="ml-2"> mdi-pencil </v-icon>
+            </v-btn>
+            <v-btn color="secondary" @click="getGeo()">
+              Localização Atual
+              <v-icon class="ml-2"> mdi-earth </v-icon>
             </v-btn>
           </v-col>
         </v-row>
@@ -24,9 +33,7 @@
                 <h3>Sobre mim</h3>
               </div>
               <span>
-                Após ser expulso do colégio público Alberto Caeiro como
-                professor de química público do MEC, me aventurei no ramo
-                armamentista e agora faturo alto com as Forças Especiais
+                {{this.form.bio}}
               </span>
             </v-card>
           </v-col>
@@ -113,17 +120,68 @@
 
 <script lang="ts">
 import Vue from "vue";
+import { user } from "@/store";
+import axios from "axios";
 
 export default Vue.extend({
   data() {
     return {
       dialog: false,
+      nickname: "", //slug
+      profile: false,
       form: {
         name: "",
         profession: "",
+        bio: "",
+        location: "",
       },
       techs: ["Cobol", "Python", "Javascript"],
     };
+  },
+
+  methods: {
+    showPosition(position: any) {
+      var latlon = position.coords.latitude + "," + position.coords.longitude;
+      var c_url =
+        "http://api.positionstack.com/v1/reverse?access_key=630b083e74caa3e74e70c54012be6e2e&query=" +
+        latlon;
+
+      axios.get(c_url).then((response: any) => {
+        const ref = this.$fire.database
+          .ref(`/users/${user.$single.uid}`)
+          .update({
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+            location:
+              response.data.data[0].county +
+              ", " +
+              response.data.data[0].region +
+              ", " +
+              response.data.data[0].country,
+          });
+      });
+    },
+
+    getGeo() {
+      navigator.geolocation.getCurrentPosition(this.showPosition);
+    },
+  },
+
+  mounted: function () {
+    this.nickname = this.$route.params.nickname;
+    this.profile = !this.nickname && this.$route.fullPath == "/profile";
+
+    if (this.profile) {
+      this.form.name = user.$single.name;
+      this.form.profession = user.$single.profession;
+      this.form.bio = user.$single.bio;
+
+      this.$fire.database
+        .ref(`users/${user.$single.uid}`)
+        .on("value", (snapshot) => {
+          this.form.location = snapshot.val().location;
+        });
+    }
   },
 });
 </script>

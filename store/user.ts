@@ -7,6 +7,7 @@ import { User } from "@/models";
   namespaced: true,
   preserveState: true, // habilita salvar no storage
 })
+
 export default class Users extends VuexModule {
   private user = {} as User;
 

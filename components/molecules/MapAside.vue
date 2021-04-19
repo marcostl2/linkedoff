@@ -12,7 +12,7 @@
                 style="height: 100%; width: 100%"
                 :zoom="10"
                 over
-                :center="[-22.95162, -43.21077]"
+                :center="[this.coords[0], this.coords[1]]"
                 @click="dialog = !dialog"
               >
                 <!-- <l-tile-layer
@@ -47,6 +47,7 @@
 <script lang="ts">
 import L from "leaflet";
 import Vue from "vue";
+import { user } from "@/store";
 import "leaflet/dist/leaflet.css";
 
 interface Coord {
@@ -66,7 +67,7 @@ export default Vue.extend({
         iconSize: [80, 80],
         iconAnchor: [16, 37],
       }),
-      coords: [-22.95162, -43.21077],
+      coords: [-20.896153599999998, -51.3933312],
       dialog: false,
     };
   },
@@ -81,6 +82,13 @@ export default Vue.extend({
     click(e: Coord): void {
       this.coords = [e.latlng.lat, e.latlng.lng];
     },
+  },
+  mounted: function () {
+    this.$fire.database
+      .ref(`users/${user.$single.uid}`)
+      .on("value", (snapshot) => {
+        this.coords = [snapshot.val().latitude, snapshot.val().longitude];
+      });
   },
 });
 </script>

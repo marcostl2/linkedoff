@@ -18,7 +18,7 @@
         <LMap
           style="height: 100%; width: 100%"
           :zoom="8"
-          :center="[-22.95162, -43.21077]"
+          :center="[this.coords[0], this.coords[1]]"
           @click="click"
         >
           <l-tile-layer
@@ -49,6 +49,8 @@
 <script lang="ts">
 import L from "leaflet";
 import Vue from "vue";
+import { user } from "@/store";
+import axios from "axios";
 
 interface Coord {
   latlng: {
@@ -70,12 +72,38 @@ export default Vue.extend({
         iconSize: [80, 80],
         iconAnchor: [16, 37],
       }),
-      coords: [-22.95162, -43.21077],
+      coords: [-20.896153599999998, -51.3933312],
     };
+  },
+  mounted: function () {
+    this.$fire.database
+      .ref(`users/${user.$single.uid}`)
+      .on("value", (snapshot) => {
+        this.coords = [snapshot.val().latitude, snapshot.val().longitude];
+      });
   },
   methods: {
     click(e: Coord): void {
       this.coords = [e.latlng.lat, e.latlng.lng];
+      let c_url =
+        "http://api.positionstack.com/v1/reverse?access_key=630b083e74caa3e74e70c54012be6e2e&query=" +
+        e.latlng.lat +
+        "," +
+        e.latlng.lng;
+
+      axios.get(c_url).then((response: any) => {
+        let city = response.data.data[0].county;
+        let state = response.data.data[0].region;
+        let country = response.data.data[0].country;
+
+        const ref = this.$fire.database
+          .ref(`/users/${user.$single.uid}`)
+          .update({
+            latitude: e.latlng.lat,
+            longitude: e.latlng.lng,
+            location: city + ", " + state + ", " + country,
+          });
+      });
     },
   },
 });
