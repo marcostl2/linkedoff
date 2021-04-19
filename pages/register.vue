@@ -1,13 +1,13 @@
 <template>
-  <v-app>
-    <nuxt />
-  </v-app>
+  <FormRegister />
 </template>
 
 <script lang="ts">
 import Vue from "vue";
 
 export default Vue.extend({
-  // middleware: "auth",
+  layout: "credentials",
 });
 </script>
+
+<style scoped></style>

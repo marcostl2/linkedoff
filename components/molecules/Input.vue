@@ -2,12 +2,14 @@
   <div class="d-flex flex-column">
     <span>{{ text | capitalizeText }}</span>
     <v-text-field
-      :value="value"
+      v-model="value"
+      @input="$emit('input', { value })"
       filled
       rounded
       dense
-      :append-icon="password ? 'mdi-eye' : ''"
-      @click:append="showPass"
+      :type="password ? (showPass ? '' : 'password') : 'text'"
+      :append-icon="password ? (showPass ? 'mdi-eye' : 'mdi-eye-off') : ''"
+      @click:append="handleShowPass"
     />
   </div>
 </template>
@@ -31,15 +33,21 @@ export default Vue.extend({
       type: String,
       required: true,
     },
-    value: {
-      type: String,
-      required: true,
-    },
+    // value: {
+    //   type: String,
+    //   required: true,
+    // },
   },
   data() {
     return {
+      value: "",
       showPass: false,
     };
+  },
+  methods: {
+    handleShowPass(): void {
+      this.showPass = !this.showPass;
+    },
   },
 });
 </script>

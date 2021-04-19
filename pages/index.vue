@@ -1,13 +1,15 @@
 <template>
-  <v-app>
-    <nuxt />
-  </v-app>
+  <div>
+    <PostCard />
+  </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
 
 export default Vue.extend({
-  // middleware: "auth",
+  layout: "logged",
 });
 </script>
+
+<style scoped></style>

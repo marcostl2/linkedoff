@@ -1,18 +1,21 @@
 <template>
   <v-card max-width="600" class="pa-16">
-    <v-form @submit.prevent="handleSubmit">
+    <v-form @submit.prevent="submit">
       <v-row>
         <v-col cols="12" align="center">
           <Logo />
         </v-col>
         <v-col cols="12" class="d-flex flex-column">
-          <span>Email</span>
+          <span>Nome</span>
+          <v-text-field type="text" v-model="form.name" filled rounded dense />
+        </v-col>
+        <v-col cols="12" class="d-flex flex-column">
+          <span>E-mail</span>
           <v-text-field
             type="email"
             v-model="form.email"
             filled
             rounded
-            required
             dense
           />
         </v-col>
@@ -21,7 +24,6 @@
           <v-text-field
             v-model="form.password"
             filled
-            required
             rounded
             dense
             :type="showPass ? '' : 'password'"
@@ -36,23 +38,15 @@
             color="primary"
             class="text-capitalize text-h6 px-8 py-4"
           >
-            Fazer login
+            Criar conta
           </v-btn>
         </v-col>
         <v-col cols="12" align="center" class="mt-8">
-          <span>Não possui uma conta?</span>
-          <NuxtLink
-            to="/register"
-            type="button"
-            class="primary--text text-decoration-underline"
-          >
-            Criar conta
+          <NuxtLink to="/login" class="primary--text text-decoration-underline">
+            Já tenho uma conta
           </NuxtLink>
         </v-col>
       </v-row>
-      <v-snackbar color="error" v-model="snackbar" timeout="2000">
-        Login ou senha inválidos
-      </v-snackbar>
     </v-form>
   </v-card>
 </template>
@@ -75,28 +69,41 @@ export default Vue.extend({
     };
   },
   methods: {
-    handleShowPass() {
-      this.showPass = !this.showPass;
-    },
-    handleSubmit() {
-      this.loading = !this.loading;
-      this.$fire.auth
-        .signInWithEmailAndPassword(this.form.email, this.form.password)
-        .then((data) => {
-          const ref = this.$fire.database.ref(`users/${data.user!.uid}`);
+    async submit() {
+      try {
+        this.loading = !this.loading;
+        const userCredential = await this.$fire.auth.createUserWithEmailAndPassword(
+          this.form.email,
+          this.form.password
+        );
 
-          ref.on("value", (snapshot) => {
-            const data = snapshot.val();
+        if (userCredential.user && userCredential.user.uid) {
+          const ref = await this.$fire.database.ref("/users");
+          const id = userCredential.user.uid;
 
-            user.create(data as any);
-            this.loading = !this.loading;
-            this.$router.push("/");
+          const payload = {
+            name: this.form.name,
+            email: this.form.email,
+            password: this.form.password,
+            profileImgUrl: "",
+            bio: "",
+            coverUrl: "",
+            // formation: [],
+            // techs: [],
+            // connections: [],
+          };
+          ref.child(id).set(payload, (err) => {
+            if (err) console.log(err);
+            else this.$router.push("/");
           });
-        })
-        .catch((): void => {
-          this.snackbar = !this.snackbar;
-          this.loading = !this.loading;
-        });
+
+          user.create({ ...payload, uid: id } as any);
+        }
+        this.loading = !this.loading;
+      } catch (error) {
+        this.loading = !this.loading;
+        console.error(error);
+      }
     },
   },
 });
