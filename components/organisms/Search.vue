@@ -3,7 +3,7 @@
     <div v-if="loading">
       <div v-if="results">
         <div v-for="result in results" :key="result.uid">
-          <a :href="'/users/' + result.link">{{ result.name }}</a>
+          <NuxtLink :to="`/users/${result.link}`">{{ result.name }}</NuxtLink>
         </div>
       </div>
       <p v-else>Sem resultados</p>
@@ -22,7 +22,9 @@ export default Vue.extend({
       loading: false,
     };
   },
-
+  created() {
+    this.fetchUsers();
+  },
   methods: {
     matchStrings(snap: any): boolean {
       return snap[1].name
@@ -33,9 +35,9 @@ export default Vue.extend({
       const ref = this.$fire.database.ref("users");
 
       ref.on("value", (snapshot) => {
-        //Remove invalid query matches
-        let entries: any = Object.entries(snapshot.val());
-        let users: any = entries
+        // Remove invalid query matches
+        const entries: any = Object.entries(snapshot.val());
+        const users: any = entries
           .filter(this.matchStrings)
           .map((entry: any) => entry[1]);
 
@@ -48,11 +50,7 @@ export default Vue.extend({
       });
     },
   },
-  created: function () {
-    this.fetchUsers();
-  },
 });
 </script>
 
-<style scoped lang="scss">
-</style>
+<style scoped lang="scss"></style>

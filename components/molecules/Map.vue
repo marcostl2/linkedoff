@@ -33,7 +33,7 @@
           url="http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         ></l-tile-layer> -->
           <!-- :icon="icon" -->
-          <l-marker :lat-lng="coords" :icon="icon">
+          <l-marker :lat-lng="coords">
             <!-- <l-tooltip>
               <div style="width: 200px; height: 100px; background: white">
                 <h2>Teste</h2>
@@ -75,7 +75,7 @@ export default Vue.extend({
       coords: [-20.896153599999998, -51.3933312],
     };
   },
-  mounted: function () {
+  mounted() {
     this.$fire.database
       .ref(`users/${user.$single.uid}`)
       .on("value", (snapshot) => {
@@ -85,24 +85,22 @@ export default Vue.extend({
   methods: {
     click(e: Coord): void {
       this.coords = [e.latlng.lat, e.latlng.lng];
-      let c_url =
+      const coordsUrl =
         "http://api.positionstack.com/v1/reverse?access_key=630b083e74caa3e74e70c54012be6e2e&query=" +
         e.latlng.lat +
         "," +
         e.latlng.lng;
 
-      axios.get(c_url).then((response: any) => {
-        let city = response.data.data[0].county;
-        let state = response.data.data[0].region;
-        let country = response.data.data[0].country;
+      axios.get(coordsUrl).then((response: any) => {
+        const city = response.data.data[0].county;
+        const state = response.data.data[0].region;
+        const country = response.data.data[0].country;
 
-        const ref = this.$fire.database
-          .ref(`/users/${user.$single.uid}`)
-          .update({
-            latitude: e.latlng.lat,
-            longitude: e.latlng.lng,
-            location: city + ", " + state + ", " + country,
-          });
+        this.$fire.database.ref(`/users/${user.$single.uid}`).update({
+          latitude: e.latlng.lat,
+          longitude: e.latlng.lng,
+          location: city + ", " + state + ", " + country,
+        });
       });
     },
   },

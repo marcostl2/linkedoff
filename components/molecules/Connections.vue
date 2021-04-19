@@ -8,8 +8,8 @@
         <div class="d-flex">
           <img src="@/assets/images/raj.png" alt="Profile Connection" />
           <div class="d-flex flex-column pl-2">
-            <h4>Raj festeiro</h4>
-            <span>CEO da Máfia</span>
+            <h4>Hélio da Silva</h4>
+            <span>CEO da India Enterprises</span>
           </div>
         </div>
       </v-col>
@@ -17,8 +17,8 @@
         <div class="d-flex">
           <img src="@/assets/images/raj.png" alt="Profile Connection" />
           <div class="d-flex flex-column pl-2">
-            <h4>Raj festeiro</h4>
-            <span>CEO da Máfia</span>
+            <h4>Hélio da Silva</h4>
+            <span>CEO da India Enterprises</span>
           </div>
         </div>
       </v-col>
@@ -26,8 +26,8 @@
         <div class="d-flex">
           <img src="@/assets/images/raj.png" alt="Profile Connection" />
           <div class="d-flex flex-column pl-2">
-            <h4>Raj festeiro</h4>
-            <span>CEO da Máfia</span>
+            <h4>Hélio da Silva</h4>
+            <span>CEO da India Enterprises</span>
           </div>
         </div>
       </v-col>
@@ -35,8 +35,8 @@
         <div class="d-flex">
           <img src="@/assets/images/raj.png" alt="Profile Connection" />
           <div class="d-flex flex-column pl-2">
-            <h4>Raj festeiro</h4>
-            <span>CEO da Máfia</span>
+            <h4>Hélio da Silva</h4>
+            <span>CEO da India Enterprises</span>
           </div>
         </div>
       </v-col>

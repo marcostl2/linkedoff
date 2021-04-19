@@ -6,7 +6,7 @@
           <img src="@/assets/images/raj.png" alt="Imagem de Perfil" />
           <div class="ml-4 justify-center d-flex flex-column">
             <h3 class="primary--text">Hélio da Silva</h3>
-            <span>CEO da Alien X</span>
+            <span>CEO da India Enterprises</span>
           </div>
         </div>
       </v-col>
@@ -17,6 +17,7 @@
       </v-col>
       <v-col cols="1">
         <v-menu left offset-y>
+          // eslint-disable-next-line vue/v-slot-style
           <template v-slot:activator="{ on, attrs }">
             <v-btn icon color="primary" v-bind="attrs" v-on="on">
               <v-icon>mdi-dots-vertical</v-icon>

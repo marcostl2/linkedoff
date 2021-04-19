@@ -4,6 +4,7 @@
 
 <style scoped lang="scss">
 img {
+  max-height: 40px;
   max-width: 50px;
 }
 </style>
