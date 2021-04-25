@@ -1,30 +1,13 @@
+import { Company } from './Company'
+
 /* Formation that will be used in the User class */
 type Tfm =
   | {
-      inst: string /* Institution */;
-      area: string | undefined;
-      degree: string | undefined;
-    }
+    inst: string /* Institution */;
+    area: string | undefined;
+    degree: string | undefined;
+  }
   | undefined;
-
-// /* Set of Languages that will be user in the User class */
-// type Tlang =
-//   | Array<{
-//       name: string;
-//       level: string;
-//     }>
-//   | undefined;
-
-// /* Set of Experiences that will be user in the User class */
-// type Texp =
-//   | Array<{
-//       position: string;
-//       company: string;
-//       sd: Date /* Start Date */;
-//       ed: Date /* End Date */;
-//       present: boolean;
-//     }>
-//   | undefined;
 
 // /* Set of Technologies that will be user in the User class */
 type Ttech = Array<{
@@ -40,8 +23,9 @@ type Tsn = Array<{
   url: string;
 }>;
 
-export interface User {
+export interface User extends Company {
   name: string;
+  isCompany: Boolean,
   email: string;
   uid: string;
   profileImgUrl: string;
@@ -52,7 +36,7 @@ export interface User {
   profession: string;
   coverUrl: string;
   password: string /* Password */;
-  formation: Array<Tfm>;
-  techs: Array<Ttech>;
-  connections: Array<Tsn>;
+  formation: Tfm;
+  techs: Ttech;
+  connections: Tsn;
 }

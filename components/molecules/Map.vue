@@ -18,7 +18,7 @@
         <LMap
           style="height: 100%; width: 100%"
           :zoom="8"
-          :center="[this.coords[0], this.coords[1]]"
+          :center="[coords[0], coords[1]]"
           @click="click"
         >
           <l-tile-layer

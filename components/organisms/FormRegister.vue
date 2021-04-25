@@ -7,13 +7,13 @@
         </v-col>
         <v-col cols="12" class="d-flex flex-column">
           <span>Nome</span>
-          <v-text-field type="text" v-model="form.name" filled rounded dense />
+          <v-text-field v-model="form.name" type="text" filled rounded dense />
         </v-col>
         <v-col cols="12" class="d-flex flex-column">
           <span>E-mail</span>
           <v-text-field
-            type="email"
             v-model="form.email"
+            type="email"
             filled
             rounded
             dense
@@ -93,7 +93,7 @@ export default Vue.extend({
             // connections: [],
           };
           ref.child(id).set(payload, (err) => {
-            if (err) console.log(err);
+            if (err) throw err;
             else this.$router.push("/");
           });
 
@@ -102,7 +102,7 @@ export default Vue.extend({
         this.loading = !this.loading;
       } catch (error) {
         this.loading = !this.loading;
-        console.error(error);
+        // console.error(error);
       }
     },
   },

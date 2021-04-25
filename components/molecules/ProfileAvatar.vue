@@ -4,14 +4,14 @@
       <img src="@/assets/images/raj.png" alt="John" />
     </v-avatar>
     <v-menu offset-y>
-      <template v-slot:activator="{ on, attrs }">
+      <template #activator="{ on, attrs }">
         <v-btn
           color="primary"
           x-small
           v-bind="attrs"
           max-width="40"
-          v-on="on"
           text
+          v-on="on"
         >
           EU
           <v-icon>mdi-menu-down</v-icon>

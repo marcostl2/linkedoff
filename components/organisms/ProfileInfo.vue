@@ -45,10 +45,10 @@
                 <h3>Tecnologias</h3>
               </div>
               <v-chip
-                class="mr-2"
-                color="primary"
                 v-for="tech in techs"
                 :key="tech"
+                class="mr-2"
+                color="primary"
               >
                 {{ tech }}
               </v-chip>

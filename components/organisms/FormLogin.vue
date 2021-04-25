@@ -8,8 +8,8 @@
         <v-col cols="12" class="d-flex flex-column">
           <span>Email</span>
           <v-text-field
-            type="email"
             v-model="form.email"
+            type="email"
             filled
             rounded
             required
@@ -50,7 +50,7 @@
           </NuxtLink>
         </v-col>
       </v-row>
-      <v-snackbar color="error" v-model="snackbar" timeout="2000">
+      <v-snackbar v-model="snackbar" color="error" timeout="2000">
         Login ou senha inválidos
       </v-snackbar>
     </v-form>
@@ -84,7 +84,7 @@ export default Vue.extend({
         .signInWithEmailAndPassword(this.form.email, this.form.password)
         .then((data) => {
           const ref = this.$fire.database.ref(`users/${data.user!.uid}`);
-          const uid = data.user!.uid
+          const uid = data.user!.uid;
 
           ref.on("value", (snapshot) => {
             const data = snapshot.val();
@@ -101,7 +101,7 @@ export default Vue.extend({
               // connections: [],
             };
 
-            user.create({...payload, uid: uid} as any);
+            user.create({ ...payload, uid } as any);
 
             this.loading = !this.loading;
             this.$router.push("/");

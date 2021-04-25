@@ -1,12 +1,13 @@
 <template>
   <v-form @submit.prevent="handleSubmit">
     <v-text-field
+      v-model="q"
       hide-details=""
       prepend-inner-icon="mdi-magnify"
       rounded
       filled
       placeholder="Buscar pessoas"
-      v-model="q"
+      @click:prepend-inner="handleSubmit"
     />
   </v-form>
 </template>
@@ -21,10 +22,10 @@ export default Vue.extend({
     };
   },
   methods: {
-    handleSubmit(): void {
-      this.$router.push(`/search?q=${this.q}`)
-    }
-  }
+    handleSubmit() {
+      this.$router.push(`/search?q=${this.q}`);
+    },
+  },
 });
 </script>
 

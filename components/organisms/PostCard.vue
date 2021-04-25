@@ -17,12 +17,12 @@
       </v-col>
       <v-col cols="1">
         <v-menu left offset-y>
-          <template v-slot:activator="{ on, attrs }">
+          <template #activator="{ on, attrs }">
             <v-btn icon color="primary" v-bind="attrs" v-on="on">
               <v-icon>mdi-dots-vertical</v-icon>
             </v-btn>
           </template>
-          <v-btn>Editar publicação</v-btn>
+          <v-btn>Editar</v-btn>
         </v-menu>
       </v-col>
     </v-row>

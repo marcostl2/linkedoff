@@ -9,10 +9,10 @@
           <div :style="getZIndex">
             <client-only style="width: 100%; height: 100%">
               <l-map
+                :center="[coords[0], coords[1]]"
                 style="height: 100%; width: 100%"
                 :zoom="10"
                 over
-                :center="[this.coords[0], this.coords[1]]"
                 @click="dialog = !dialog"
               >
                 <!-- <l-tile-layer
@@ -40,7 +40,7 @@
         </v-col>
       </v-row>
     </v-card>
-    <Map v-if="dialog" :dialog="dialog" @close="dialog = !dialog" />
+    <!-- <Map v-if="dialog" :dialog="dialog" @close="dialog = !dialog" /> -->
   </div>
 </template>
 
@@ -50,12 +50,12 @@ import Vue from "vue";
 import { user } from "@/store";
 import "leaflet/dist/leaflet.css";
 
-interface Coord {
-  latlng: {
-    lat: number;
-    lng: number;
-  };
-}
+// interface Coord {
+//   latlng: {
+//     lat: number;
+//     lng: number;
+//   };
+// }
 
 export default Vue.extend({
   data() {
@@ -67,7 +67,7 @@ export default Vue.extend({
         iconSize: [80, 80],
         iconAnchor: [16, 37],
       }),
-      coords: [-20.896153599999998, -51.3933312],
+      coords: [47.31322, -1.319482],
       dialog: false,
     };
   },
@@ -78,17 +78,17 @@ export default Vue.extend({
         : "width: 100%; height: 200px";
     },
   },
-  methods: {
-    click(e: Coord): void {
-      this.coords = [e.latlng.lat, e.latlng.lng];
-    },
-  },
-  mounted: function () {
+  mounted() {
     this.$fire.database
       .ref(`users/${user.$single.uid}`)
       .on("value", (snapshot) => {
         this.coords = [snapshot.val().latitude, snapshot.val().longitude];
       });
+  },
+  methods: {
+    // click(e: Coord): void {
+    //   this.coords = [e.latlng.lat, e.latlng.lng];
+    // },
   },
 });
 </script>
