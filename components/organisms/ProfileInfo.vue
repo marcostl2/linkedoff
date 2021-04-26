@@ -1,15 +1,13 @@
 <template>
   <div>
-    <p>{{ nickname }}</p>
-    <v-card class="pa-0" max-width="50rem">
-      <div class="profile-cover"></div>
+    <v-card class="pa-0" width="100%">
+      <UploadCoverImg />
       <v-container class="py-12 px-5 profile-container d-flex flex-column">
         <ProfileImg />
         <v-row>
           <v-col class="d-flex flex-column">
             <h2>{{ form.name }}</h2>
             <span v-if="form.profession">{{ form.profession }}</span>
-            <span v-else>Desempregado</span>
             <span v-if="form.location">
               {{ form.location }}
             </span>
@@ -18,27 +16,20 @@
           <v-col align="end">
             <v-btn color="primary" @click="dialog = !dialog">
               Editar perfil
-              <v-icon class="ml-2"> mdi-pencil </v-icon>
+              <v-icon class="ml-2">mdi-pencil</v-icon>
             </v-btn>
-            <v-btn color="secondary" @click="getGeo()">
+            <!-- <v-btn color="secondary" @click="getGeo()">
               Localização Atual
-              <v-icon class="ml-2"> mdi-earth </v-icon>
-            </v-btn>
+              <v-icon class="ml-2">mdi-earth</v-icon>
+            </v-btn> -->
           </v-col>
         </v-row>
         <v-row>
           <v-col>
-            <v-card color="grey01" elevation="0" class="pa-4">
-              <div class="d-flex justify-space-between mb-4">
-                <h3>Sobre mim</h3>
-              </div>
-              <span>
-                {{ form.bio }}
-              </span>
-            </v-card>
+            <ProfileAbout :bio="form.bio" />
           </v-col>
         </v-row>
-        <v-row>
+        <v-row v-if="!isCompany">
           <v-col>
             <v-card color="grey01" elevation="0" class="pa-4">
               <div class="d-flex justify-space-between mb-4">
@@ -52,6 +43,51 @@
               >
                 {{ tech }}
               </v-chip>
+            </v-card>
+          </v-col>
+        </v-row>
+        <v-row v-else>
+          <v-col>
+            <v-card color="grey01" elevation="0" class="pa-4">
+              <div class="d-flex justify-space-between mb-4">
+                <h3>Vagas</h3>
+                <v-btn small color="primary">Anunciar vagas</v-btn>
+              </div>
+              <div class="d-flex">
+                <v-card class="d-flex flex-column my-2 mr-4" max-width="300">
+                  <v-card-title>Vaga de motorista</v-card-title>
+                  <v-card-text>
+                    Lorem ipsum dolor sit, amet consectetur adipisicing elit.
+                    Voluptatibus odit eos praesentium voluptate pariatur?
+                    Itaque, molestiae. Quam atque rem beatae similique. Nemo
+                    quaerat molestias odio, vel tenetur veritatis perspiciatis
+                    animi.
+                  </v-card-text>
+                </v-card>
+                <v-card class="d-flex flex-column my-2 mr-4" max-width="300">
+                  <v-card-title>Vaga de motorista</v-card-title>
+                  <v-card-text>
+                    Lorem ipsum dolor sit, amet consectetur adipisicing elit.
+                    Voluptatibus odit eos praesentium voluptate pariatur?
+                    Itaque, molestiae. Quam atque rem beatae similique. Nemo
+                    quaerat molestias odio, vel tenetur veritatis perspiciatis
+                    animi.
+                  </v-card-text>
+                </v-card>
+              </div>
+              <div class="mt-2 d-flex flex-column align-center justify-center">
+                <v-btn text color="primary" class="mb-4">
+                  Visualizar todas as vagas
+                </v-btn>
+                <v-btn
+                  v-if="isCompany && !visitProfile"
+                  block
+                  color="primary"
+                  class="mb-4"
+                >
+                  Ver empresa no mapa
+                </v-btn>
+              </div>
             </v-card>
           </v-col>
         </v-row>
@@ -124,6 +160,9 @@ import { user } from "@/store";
 import axios from "axios";
 
 export default Vue.extend({
+  props: {
+    visitProfile: { type: Boolean },
+  },
   data() {
     return {
       dialog: false,
@@ -137,6 +176,11 @@ export default Vue.extend({
       },
       techs: ["Cobol", "Python", "Javascript"],
     };
+  },
+  computed: {
+    isCompany() {
+      return user.$single.isCompany;
+    },
   },
   mounted() {
     this.nickname = this.$route.params.nickname;
@@ -181,15 +225,3 @@ export default Vue.extend({
   },
 });
 </script>
-
-<style scoped lang="scss">
-.profile-cover {
-  height: 140px;
-  width: 100%;
-  background: url(https://media.istockphoto.com/photos/money-background-picture-id453623995);
-}
-
-.profile-container {
-  position: relative;
-}
-</style>

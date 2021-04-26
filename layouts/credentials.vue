@@ -1,11 +1,15 @@
 <template>
   <v-app>
     <v-container style="height: 100vh" class="ma-0 pa-0" fluid>
-      <v-row>
-        <v-col cols="4">
+      <v-row no-gutters>
+        <v-col cols="4" class="d-none d-md-block">
           <SideBar />
         </v-col>
-        <v-col cols="8" class="form-section d-flex align-center justify-center">
+        <v-col
+          cols="12"
+          md="8"
+          class="form-section d-flex align-center justify-center px-4"
+        >
           <slot>
             <Nuxt />
           </slot>

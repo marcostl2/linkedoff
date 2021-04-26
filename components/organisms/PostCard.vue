@@ -11,9 +11,7 @@
         </div>
       </v-col>
       <v-col cols="4">
-        <v-btn icon>
-          <v-spacer />
-        </v-btn>
+        <v-spacer />
       </v-col>
       <v-col cols="1">
         <v-menu left offset-y>

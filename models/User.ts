@@ -1,4 +1,4 @@
-import { Company } from './Company'
+import { Company } from "./Company";
 
 /* Formation that will be used in the User class */
 type Tfm =
@@ -25,7 +25,7 @@ type Tsn = Array<{
 
 export interface User extends Company {
   name: string;
-  isCompany: Boolean,
+  isCompany: Boolean;
   email: string;
   uid: string;
   profileImgUrl: string;

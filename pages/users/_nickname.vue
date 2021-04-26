@@ -1,6 +1,6 @@
 <template>
   <div>
-    <ProfileInfo />
+    <ProfileInfo :visitProfile="true" />
   </div>
 </template>
 

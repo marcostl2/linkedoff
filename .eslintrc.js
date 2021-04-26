@@ -31,5 +31,7 @@ module.exports = {
         },
       },
     ],
+    "prefer-const": "off",
+    "vue/attribute-hyphenation": "off",
   },
 };

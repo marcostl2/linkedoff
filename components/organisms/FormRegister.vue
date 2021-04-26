@@ -31,6 +31,9 @@
             @click:append="showPass = !showPass"
           />
         </v-col>
+        <v-col cols="12">
+          <v-checkbox v-model="form.isCompany" label="Sou empresa" />
+        </v-col>
         <v-col cols="12" align="center">
           <v-btn
             :loading="loading"
@@ -62,6 +65,7 @@ export default Vue.extend({
         name: "",
         email: "",
         password: "",
+        isCompany: false,
       },
       loading: false,
       snackbar: false,
@@ -85,12 +89,13 @@ export default Vue.extend({
             name: this.form.name,
             email: this.form.email,
             password: this.form.password,
+            isCompany: this.form.isCompany,
             profileImgUrl: "",
             bio: "",
             coverUrl: "",
-            // formation: [],
-            // techs: [],
-            // connections: [],
+            latitude: "",
+            profession: "",
+            longitude: "",
           };
           ref.child(id).set(payload, (err) => {
             if (err) throw err;
@@ -102,7 +107,6 @@ export default Vue.extend({
         this.loading = !this.loading;
       } catch (error) {
         this.loading = !this.loading;
-        // console.error(error);
       }
     },
   },

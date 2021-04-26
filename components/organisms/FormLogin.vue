@@ -96,9 +96,9 @@ export default Vue.extend({
               profileImgUrl: data.profileImgUrl,
               bio: data.bio,
               coverUrl: data.coverUrl,
-              // formation: [],
-              // techs: [],
-              // connections: [],
+              latitude: data.latitude,
+              longitude: data.longitude,
+              isCompany: data.isCompany,
             };
 
             user.create({ ...payload, uid } as any);
