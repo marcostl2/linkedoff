@@ -21,7 +21,8 @@
       "@types/node",
       "vuetify",
       "nuxt-leaflet",
-      "@nuxtjs/firebase"
+      "@nuxtjs/firebase",
+      "vue-sweetalert2"
     ]
   },
   "exclude": ["node_modules", ".nuxt", "dist"]

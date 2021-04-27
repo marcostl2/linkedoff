@@ -18,10 +18,10 @@ type Ttech = Array<{
 }>;
 
 // /* Set of Social Networks that will be user in the User class */
-type Tsn = Array<{
-  uid: string;
-  date: Date
-}>;
+// type Tsn = Array<{
+//   uid: string;
+//   date: Date
+// }>;
 
 export interface User extends Company {
   name: string;

@@ -64,6 +64,7 @@ export default {
   modules: [
     // https://go.nuxtjs.dev/axios
     "@nuxtjs/axios",
+    "vue-sweetalert2/nuxt",
     "nuxt-leaflet",
     [
       "@nuxtjs/firebase",

@@ -14,9 +14,9 @@
               <v-col cols="12">
                 <Connections />
               </v-col>
-              <v-col cols="12">
+              <!-- <v-col cols="12">
                 <MapAside />
-              </v-col>
+              </v-col> -->
             </v-row>
           </v-col>
         </v-row>
@@ -65,6 +65,7 @@ export default Vue.extend({
               bio: data.bio,
               coverUrl: data.coverUrl,
               latitude: data.latitude,
+              profession: data.profession,
               longitude: data.longitude,
               isCompany: data.isCompany,
             };
@@ -80,10 +81,14 @@ export default Vue.extend({
 });
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 main {
   width: 100%;
   height: 100%;
   background-color: #f1f1f1;
+}
+
+.wrapper {
+  max-width: 1160px !important;
 }
 </style>

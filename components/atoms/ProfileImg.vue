@@ -15,7 +15,7 @@ export default Vue.extend({});
   width: 100px;
   height: 120px;
   position: absolute;
-  top: 100px;
+  top: 90px;
   left: 20px;
 
   img {

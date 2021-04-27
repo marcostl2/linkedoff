@@ -47,17 +47,16 @@
 </template>
 
 <script lang="ts">
-import L from "leaflet";
+// import L from "leaflet";
 import Vue from "vue";
 import { user } from "@/store";
-import axios from "axios";
 
-interface Coord {
-  latlng: {
-    lat: number;
-    lng: number;
-  };
-}
+// interface Coord {
+//   latlng: {
+//     lat: number;
+//     lng: number;
+//   };
+// }
 
 export default Vue.extend({
   props: {
@@ -67,11 +66,11 @@ export default Vue.extend({
     return {
       mapbox_token:
         "pk.eyJ1IjoibWFyY29zdGwyIiwiYSI6ImNrZzc5ODJiczA1NHQycW53bm4xYTQyZW0ifQ.oVKrPl790Dca194Au2dmjA",
-      icon: L.icon({
-        iconUrl: require("@/assets/images/raj.png"),
-        iconSize: [80, 80],
-        iconAnchor: [16, 37],
-      }),
+      // icon: L.icon({
+      //   iconUrl: require("@/assets/images/raj.png"),
+      //   iconSize: [80, 80],
+      //   iconAnchor: [16, 37],
+      // }),
       coords: [-20.896153599999998, -51.3933312],
     };
   },
@@ -83,26 +82,24 @@ export default Vue.extend({
       });
   },
   methods: {
-    click(e: Coord): void {
-      this.coords = [e.latlng.lat, e.latlng.lng];
-      const coordsUrl =
-        "http://api.positionstack.com/v1/reverse?access_key=630b083e74caa3e74e70c54012be6e2e&query=" +
-        e.latlng.lat +
-        "," +
-        e.latlng.lng;
-
-      axios.get(coordsUrl).then((response: any) => {
-        const city = response.data.data[0].county;
-        const state = response.data.data[0].region;
-        const country = response.data.data[0].country;
-
-        this.$fire.database.ref(`/users/${user.$single.uid}`).update({
-          latitude: e.latlng.lat,
-          longitude: e.latlng.lng,
-          location: city + ", " + state + ", " + country,
-        });
-      });
-    },
+    // click(e: Coord): void {
+    //   this.coords = [e.latlng.lat, e.latlng.lng];
+    //   const coordsUrl =
+    //     "http://api.positionstack.com/v1/reverse?access_key=630b083e74caa3e74e70c54012be6e2e&query=" +
+    //     e.latlng.lat +
+    //     "," +
+    //     e.latlng.lng;
+    //   this.$axios.$get(coordsUrl).then((response: any) => {
+    //     const city = response.data.data[0].county;
+    //     const state = response.data.data[0].region;
+    //     const country = response.data.data[0].country;
+    //     this.$fire.database.ref(`/users/${user.$single.uid}`).update({
+    //       latitude: e.latlng.lat,
+    //       longitude: e.latlng.lng,
+    //       location: city + ", " + state + ", " + country,
+    //     });
+    //   });
+    // },
   },
 });
 </script>

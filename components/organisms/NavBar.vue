@@ -1,6 +1,6 @@
 <template>
   <v-app-bar color="white" flat center height="88">
-    <v-container class="d-flex align-center">
+    <v-container class="d-flex align-center wrapper" fluid>
       <v-row class="d-flex justify-space-between align-center">
         <v-col cols="2">
           <LogoCropped />
