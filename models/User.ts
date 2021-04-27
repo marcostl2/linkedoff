@@ -19,8 +19,8 @@ type Ttech = Array<{
 
 // /* Set of Social Networks that will be user in the User class */
 type Tsn = Array<{
-  name: string;
-  url: string;
+  uid: string;
+  date: Date
 }>;
 
 export interface User extends Company {
@@ -38,5 +38,5 @@ export interface User extends Company {
   password: string /* Password */;
   formation: Tfm;
   techs: Ttech;
-  connections: Tsn;
+  connections: any[];
 }

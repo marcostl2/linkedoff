@@ -4,45 +4,26 @@
       <v-col cols="12">
         <h3>Suas conexões</h3>
       </v-col>
-      <v-col cols="12">
-        <div class="d-flex">
-          <img src="@/assets/images/raj.png" alt="Profile Connection" />
-          <div class="d-flex flex-column pl-2">
-            <h4>Hélio da Silva</h4>
-            <span>CEO da India Enterprises</span>
-          </div>
-        </div>
+      <div v-if="users ? users.length > 0 : false">
+        <v-col v-for="user in users" :key="user[0]" cols="12">
+          <NuxtLink :to="`/users/${user[1].name.split(' ').join('_')}`">
+            <div class="d-flex">
+              <img src="@/assets/images/raj.png" alt="Profile Connection" />
+              <div class="d-flex flex-column pl-2">
+                <h4>{{ user[1].name }}</h4>
+                <span v-if="user[1].profession">{{ user[1].profession }}</span>
+                <span v-else>Desempregado</span>
+              </div>
+            </div>
+          </NuxtLink>
+        </v-col>
+      </div>
+      <v-col v-else cols="12">
+        <span>Sem contatos</span>
       </v-col>
-      <v-col cols="12">
-        <div class="d-flex">
-          <img src="@/assets/images/raj.png" alt="Profile Connection" />
-          <div class="d-flex flex-column pl-2">
-            <h4>Hélio da Silva</h4>
-            <span>CEO da India Enterprises</span>
-          </div>
-        </div>
-      </v-col>
-      <v-col cols="12">
-        <div class="d-flex">
-          <img src="@/assets/images/raj.png" alt="Profile Connection" />
-          <div class="d-flex flex-column pl-2">
-            <h4>Hélio da Silva</h4>
-            <span>CEO da India Enterprises</span>
-          </div>
-        </div>
-      </v-col>
-      <v-col cols="12">
-        <div class="d-flex">
-          <img src="@/assets/images/raj.png" alt="Profile Connection" />
-          <div class="d-flex flex-column pl-2">
-            <h4>Hélio da Silva</h4>
-            <span>CEO da India Enterprises</span>
-          </div>
-        </div>
-      </v-col>
-      <v-col cols="12">
+      <v-col v-if="users ? users.length > 0 : false" cols="12">
         <NuxtLink to="/connections">
-          <v-btn width="100" color="primary" text> Ver todas</v-btn>
+          <v-btn width="100" color="primary" text>Ver todas</v-btn>
         </NuxtLink>
       </v-col>
     </v-row>
@@ -51,8 +32,32 @@
 
 <script lang="ts">
 import Vue from "vue";
+import { user } from "@/store";
 
-export default Vue.extend({});
+export default Vue.extend({
+  data() {
+    return {
+      users: undefined,
+    };
+  },
+
+  mounted() {
+    const ref = this.$fire.database.ref("/users/");
+    ref.on("value", (snapshot) => {
+      const uc = user.$single.connections
+        ? user.$single.connections.map((t: any) => Object.keys(t)[0])
+        : [];
+      const entries: any = Object.entries(snapshot.val());
+      let us = entries.filter((u: any) => {
+        const c = u[1].connections
+          ? u[1].connections.map((t: any) => Object.keys(t)[0])
+          : [];
+        return c.includes(user.$single.uid) && uc.includes(u[0]);
+      });
+      this.users = us;
+    });
+  },
+});
 </script>
 
 <style scoped lang="scss">
@@ -60,5 +65,14 @@ img {
   width: 50px;
   height: 50px;
   border-radius: 50%;
+}
+
+.d-flex.flex-column.pl-2 {
+  h4 {
+    color: #32b295;
+  }
+  span {
+    color: black;
+  }
 }
 </style>

@@ -1,5 +1,7 @@
 <template>
-  <img src="@/assets/images/logo-cropped.png" alt="Image" />
+  <NuxtLink to="/">
+    <img src="@/assets/images/logo-cropped.png" alt="Image" />
+  </NuxtLink>
 </template>
 
 <style scoped lang="scss">

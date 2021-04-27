@@ -1,9 +1,9 @@
 <template>
   <div>
     <v-card class="pa-0" width="100%">
-      <UploadCoverImg />
+      <UploadCoverImg :forceUrl="defaultUrl" />
+      <ProfileImg />
       <v-container class="py-12 px-5 profile-container d-flex flex-column">
-        <ProfileImg />
         <v-row>
           <v-col class="d-flex flex-column">
             <h2>{{ form.name }}</h2>
@@ -11,13 +11,45 @@
             <span v-if="form.location">
               {{ form.location }}
             </span>
-            <span v-else>Sem acesso a localização</span>
           </v-col>
           <v-col align="end">
-            <v-btn color="primary" @click="dialog = !dialog">
+            <v-btn v-if="profile" color="primary" @click="dialog = !dialog">
               Editar perfil
               <v-icon class="ml-2">mdi-pencil</v-icon>
             </v-btn>
+            <v-btn
+              v-else-if="!profile && status_connection === 0"
+              color="primary"
+              @click="addFriend()"
+            >
+              Solicitar Conexão
+              <v-icon class="ml-2">mdi mdi-account-plus</v-icon>
+            </v-btn>
+            <v-btn
+              v-else-if="!profile && status_connection === 1"
+              color="warning"
+              @click="removeFriend()"
+            >
+              Cancelar Pedido de Amizade
+              <v-icon class="ml-2">mdi mdi-account-plus</v-icon>
+            </v-btn>
+            <v-btn
+              v-else-if="!profile && status_connection === 2"
+              color="warning"
+              @click="addFriend()"
+            >
+              Aceitar Pedido de Amizade
+              <v-icon class="ml-2">mdi mdi-account-plus</v-icon>
+            </v-btn>
+            <v-btn
+              v-else-if="!profile && status_connection === 3"
+              color="error"
+              @click="removeFriend()"
+            >
+              Remover Conexão
+              <v-icon class="ml-2">mdi mdi-account-minus</v-icon>
+            </v-btn>
+
             <!-- <v-btn color="secondary" @click="getGeo()">
               Localização Atual
               <v-icon class="ml-2">mdi-earth</v-icon>
@@ -175,6 +207,10 @@ export default Vue.extend({
         location: "",
       },
       techs: ["Cobol", "Python", "Javascript"],
+      /* Other profiles */
+      profileUID: "",
+      defaultUrl: "",
+      status_connection: 0, // Not friend, waiting aproval, friend
     };
   },
   computed: {
@@ -184,18 +220,57 @@ export default Vue.extend({
   },
   mounted() {
     this.nickname = this.$route.params.nickname;
-    this.profile = !this.nickname && this.$route.fullPath === "/profile";
+    this.profile =
+      (!this.nickname && this.$route.fullPath === "/profile") ||
+      user.$single.name === this.nickname.split("_").join(" ");
 
     if (this.profile) {
       this.form.name = user.$single.name;
       this.form.profession = user.$single.profession;
       this.form.bio = user.$single.bio;
+      this.form.location = user.$single.location;
 
+      /*
       this.$fire.database
         .ref(`users/${user.$single.uid}`)
         .on("value", (snapshot) => {
           this.form.location = snapshot.val().location;
         });
+      */
+    } else {
+      const ref = this.$fire.database.ref("users");
+
+      ref.on("value", (snapshot) => {
+        const entries: any = Object.entries(snapshot.val());
+        const users: any = entries.filter(
+          (u: any) => u[1].name === this.nickname.split("_").join(" ")
+        );
+
+        /* Definition */
+        let cUser = users[0][1];
+        this.profileUID = users[0][0];
+        this.form.name = cUser.name;
+        this.form.profession = cUser.profession;
+        this.form.bio = cUser.bio;
+        this.form.location = cUser.location;
+        this.defaultUrl = cUser.profileImgUrl;
+
+        let arrowHim = cUser.connections
+          ? cUser.connections.filter((c: any) => user.$single.uid in c).length >
+            0
+          : false;
+        let arrowMe =
+          user.$single.connections !== undefined
+            ? Array.from(user.$single.connections).filter(
+                (c: any) => this.profileUID in c
+              ).length > 0
+            : false;
+
+        if (!arrowMe && !arrowHim) this.status_connection = 0;
+        else if (arrowMe && !arrowHim) this.status_connection = 1;
+        else if (!arrowMe && arrowHim) this.status_connection = 2;
+        else if (arrowMe && arrowHim) this.status_connection = 3;
+      });
     }
   },
   methods: {
@@ -221,6 +296,53 @@ export default Vue.extend({
 
     getGeo() {
       navigator.geolocation.getCurrentPosition(this.showPosition);
+    },
+
+    addFriend() {
+      /* Get connections */
+      const ref = this.$fire.database.ref(`/users/${user.$single.uid}`);
+      let connections: any[] = [];
+      ref.on("value", (snapshot) => {
+        const cUser = snapshot.val();
+
+        /* If in friends list */
+        if (cUser.connections) {
+          connections = Array.from(snapshot.val().connections);
+          connections.push({ [this.profileUID]: new Date() });
+        } else {
+          connections = [{ [this.profileUID]: new Date() }];
+        }
+      });
+
+      user.create({ ...user.$single, connections } as any);
+
+      this.$fire.database.ref(`/users/${user.$single.uid}`).update({
+        connections,
+      });
+    },
+
+    removeFriend() {
+      const ref = this.$fire.database.ref(`/users/${user.$single.uid}`);
+
+      let connections: any[] | undefined = [];
+      ref.on("value", (snapshot) => {
+        const cUser = snapshot.val();
+
+        /* If in friends list */
+        if (cUser.connections) {
+          connections = Array.from(snapshot.val().connections).filter(
+            (x: any) => !(this.profileUID in x)
+          );
+        } else {
+          connections = undefined;
+        }
+      });
+
+      user.create({ ...user.$single, connections } as any);
+
+      this.$fire.database.ref(`/users/${user.$single.uid}`).update({
+        connections,
+      });
     },
   },
 });

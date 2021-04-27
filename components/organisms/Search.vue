@@ -42,7 +42,7 @@ export default Vue.extend({
           .map((entry: any) => entry[1]);
 
         users.forEach((user: any) => {
-          user.link = user.name.toLowerCase().split(" ").slice(0, 3).join("_");
+          user.link = user.name.split(" ").join("_");
         });
 
         this.results = users.length > 0 ? users : null;

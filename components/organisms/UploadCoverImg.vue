@@ -41,6 +41,12 @@ import Vue from "vue";
 import { user } from "@/store";
 
 export default Vue.extend({
+  props: {
+    forceUrl: {
+      type: String,
+      required: true,
+    },
+  },
   data() {
     return {
       dialog: false,
@@ -49,13 +55,13 @@ export default Vue.extend({
   },
   computed: {
     getImg() {
-      return user.$single.profileImgUrl;
+      return this.forceUrl !== "" ? this.forceUrl : user.$single.profileImgUrl;
     },
   },
   methods: {
     async handleUpload() {
       try {
-        const file: Object = this.file;
+        const file: Object = (this as any).file;
         let filename = `${user.$single.uid}_${+new Date()}_cover`;
         let snapshot = await this.$fire.storage
           .ref("covers")
@@ -65,6 +71,9 @@ export default Vue.extend({
         const url = await snapshot.ref.getDownloadURL();
 
         user.create({ ...user.$single, profileImgUrl: url } as any);
+        this.$fire.database.ref(`/users/${user.$single.uid}`).update({
+          profileImgUrl: url,
+        });
       } catch (error) {
         // console.error(error);
       }

@@ -99,6 +99,7 @@ export default Vue.extend({
               latitude: data.latitude,
               longitude: data.longitude,
               isCompany: data.isCompany,
+              connections: data.connections
             };
 
             user.create({ ...payload, uid } as any);
