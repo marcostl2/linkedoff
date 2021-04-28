@@ -6,7 +6,6 @@
     >
       <v-file-input
         v-show="false"
-        v-model="file"
         ref="coverFileInput"
         type="file"
         accept="image/*"
@@ -16,7 +15,7 @@
       />
 
       <v-btn
-        v-if="profileUID === ''"
+        v-if="!profileUID"
         class="cover-picker d-flex align-center justify-center"
         fab
         depressed
@@ -58,37 +57,59 @@ import Vue from "vue";
 import { user } from "@/store";
 
 export default Vue.extend({
-  props: {
-    profileUID: {
-      type: String,
-      required: true,
-    },
-  },
   data() {
     return {
       dialog: false,
       file: Object,
       coverUrl: "",
+      profileUID: null,
     };
   },
   mounted() {
-    this.coverUrl =
-      "https://p2.trrsf.com/image/fget/cf/1200/628/middle/images.terra.com/2019/04/09/mc-zoi-de-gato.jpeg";
-    if (this.profileUID) {
-      /* Other persons */
-      this.$fire.database
-        .ref(`/usuarios/${this.profileUID}`)
-        .on("value", (snapshot) => {
-          this.coverUrl = snapshot.val().coverUrl;
-        });
-    } else {
-      this.coverUrl = user.$single.coverUrl;
-    }
+    let nickname = this.$route.params.nickname;
+
+    /* Fetch user UID based on url */
+    this.$fire.database.ref("users").on("value", (snapshot) => {
+      if (nickname) {
+        const entries: any = Object.entries(snapshot.val());
+        const users: any = entries.filter(
+          (u: any) => u[1].name === nickname.split("_").join(" ")
+        );
+        this.profileUID = users[0][0];
+      }
+
+      this.coverUrl =
+        "https://p2.trrsf.com/image/fget/cf/1200/628/middle/images.terra.com/2019/04/09/mc-zoi-de-gato.jpeg";
+
+      if (this.profileUID) {
+        /* Other persons */
+        this.$fire.database
+          .ref(`/users/${this.profileUID}`)
+          .on("value", (snapshot) => {
+            this.coverUrl =
+              snapshot.val().coverUrl !== ""
+                ? snapshot.val().coverUrl
+                : this.coverUrl;
+          });
+      } else {
+        this.coverUrl = user.$single.coverUrl ? user.$single.coverUrl : this.coverUrl;
+      }
+    });
   },
   methods: {
-    async handleUpload() {
+    async handleUpload(fileEvent: any) {
       try {
+        this.file = fileEvent;
         const file: Object = (this as any).file;
+
+        /* Deletes other covers in the firestore */
+        let snap = await this.$fire.storage.ref("covers").listAll();
+        snap.items
+          .filter((item) => item.fullPath.includes(user.$single.uid))
+          .forEach((item) => {
+            item.delete();
+          });
+
         let filename = `${user.$single.uid}_${+new Date()}_cover`;
         let snapshot = await this.$fire.storage
           .ref("covers")

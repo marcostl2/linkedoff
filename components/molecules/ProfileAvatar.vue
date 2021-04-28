@@ -1,7 +1,7 @@
 <template>
   <a class="d-flex flex-column">
     <v-avatar s color="primary" size="40" tile>
-      <img src="@/assets/images/raj.png" alt="John" />
+      <img :src="profileImgUrl" alt="Imagem de Perfil" />
     </v-avatar>
     <v-menu offset-y>
       <template #activator="{ on, attrs }">
@@ -29,8 +29,23 @@
 
 <script lang="ts">
 import Vue from "vue";
+import { user } from "@/store";
 
 export default Vue.extend({
+  data() {
+    return {
+      profileImgUrl: "",
+    };
+  },
+  mounted() {
+    this.$fire.database
+      .ref(`/users/${user.$single.uid}`)
+      .on("value", (snapshot) => {
+        this.profileImgUrl = snapshot.val().profileImgUrl
+          ? snapshot.val().profileImgUrl
+          : "https://storage.googleapis.com/kondzilla-wp/2020/07/marks2.jpg";
+      });
+  },
   methods: {
     handleSignOut() {
       this.$fire.auth.signOut();

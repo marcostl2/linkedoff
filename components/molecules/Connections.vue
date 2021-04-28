@@ -8,7 +8,7 @@
         <v-col v-for="user in users" :key="user[0]" cols="12">
           <NuxtLink :to="`/users/${user[1].name.split(' ').join('_')}`">
             <div class="d-flex">
-              <img src="@/assets/images/raj.png" alt="Profile Connection" />
+              <img :src="user[1].profileImgUrl ? user[1].profileImgUrl : 'https://storage.googleapis.com/kondzilla-wp/2020/07/marks2.jpg'" alt="Profile Connection" />
               <div class="d-flex flex-column pl-2">
                 <h4>{{ user[1].name }}</h4>
                 <span v-if="user[1].profession">{{ user[1].profession }}</span>

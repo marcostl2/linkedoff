@@ -1,13 +1,13 @@
 <template>
   <div>
     <v-card class="pa-0" width="100%">
-      <UploadCoverImg :profileUID="profileUID" />
+      <UploadCoverImg />
       <ProfileImg />
       <v-container class="py-12 px-5 profile-container d-flex flex-column">
         <v-row>
           <v-col class="d-flex flex-column">
             <h2>{{ form.name }}</h2>
-            <span @notok="console.log('123')" v-if="form.profession">
+            <span v-if="form.profession">
               {{ form.profession }}
             </span>
             <span v-if="form.location">
@@ -15,7 +15,11 @@
             </span>
           </v-col>
           <v-col align="end">
-            <v-btn v-if="profile" color="primary" @click="dialog = !dialog">
+            <v-btn
+              v-if="profile && $route.fullPath === '/profile'"
+              color="primary"
+              @click="dialog = !dialog"
+            >
               Editar perfil
               <v-icon class="ml-2">mdi-pencil</v-icon>
             </v-btn>
@@ -172,7 +176,7 @@ export default Vue.extend({
     this.profile =
       (!this.nickname && this.$route.fullPath === "/profile") ||
       user.$single.name === this.nickname.split("_").join(" ");
-    
+
     if (this.profile) {
       this.form.name = user.$single.name;
       this.form.profession = user.$single.profession;
@@ -196,19 +200,18 @@ export default Vue.extend({
         this.form.location = cUser.location;
         this.defaultUrl = cUser.coverUrl;
 
-        console.log(this.defaultUrl)
-
-        let arrowHim = cUser.connections !== undefined
-        ? cUser.connections.filter((c: any) => user.$single.uid in c).length >
-            0
-          : false;
+        let arrowHim =
+          cUser.connections !== undefined
+            ? cUser.connections.filter((c: any) => user.$single.uid in c)
+                .length > 0
+            : false;
         let arrowMe =
           user.$single.connections !== undefined
             ? Array.from(user.$single.connections).filter(
                 (c: any) => this.profileUID in c
               ).length > 0
             : false;
-        
+
         if (!arrowMe && !arrowHim) this.status_connection = 0;
         else if (arrowMe && !arrowHim) this.status_connection = 1;
         else if (!arrowMe && arrowHim) this.status_connection = 2;
