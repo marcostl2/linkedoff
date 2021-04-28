@@ -26,7 +26,7 @@
           <v-col cols="12">
             <span>Sobre</span>
             <v-textarea
-              :value="form.bio"
+              v-model="form.bio"
               filled
               required
               no-resize
@@ -72,37 +72,29 @@ export default Vue.extend({
       },
     };
   },
-  created() {
+  mounted() {
     this.form.profession = user.$single.profession;
     this.form.bio = user.$single.bio;
   },
   methods: {
     async create() {
       try {
-        // console.log({
-        //   ...user.$single,
-        //   profession: this.form.profession,
-        //   bio: this.form.bio,
-        // });
-        const ref = await this.$fire.database.ref("/users");
+        const ref = await this.$fire.database.ref(`/users/${user.$single.uid}`);
 
-        ref.child(user.$single.uid).set(
-          {
-            ...user.$single,
-            profession: this.form.profession,
-            bio: this.form.bio,
-          }
-          // (err) => {
-          // if (err) console.log(err);
-          // }
-        );
+        ref.update({
+          profession: this.form.profession,
+          bio: this.form.bio,
+        });
+
         user.create({
           ...user.$single,
           profession: this.form.profession,
           bio: this.form.bio,
         } as any);
+
+        this.$emit("updateInfo", this.form);
       } catch (error) {
-        // console.log(error);
+        console.log(error);
         throw new Error("ERRO");
       }
     },

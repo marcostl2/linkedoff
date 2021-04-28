@@ -23,10 +23,16 @@ export default Vue.extend({
   },
   methods: {
     handleSubmit() {
-      this.$router.push(`/search?q=${this.q}`);
+      let router = this.$router;
+      let query = this.q;
+      setTimeout(function () {
+        router.push(`/search?q=${query}`);
+      }, 5);
+      router.push("/");
     },
   },
 });
 </script>
 
 <style scoped></style>
+

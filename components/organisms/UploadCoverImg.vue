@@ -1,17 +1,34 @@
 <template>
   <div>
-    <div class="profile-cover" :style="`background:url(${getImg})`">
+    <div
+      class="profile-cover"
+      :style="`background:url('${coverUrl}') center center / cover no-repeat`"
+    >
+      <v-file-input
+        v-show="false"
+        v-model="file"
+        ref="coverFileInput"
+        type="file"
+        accept="image/*"
+        prepend-icon="mdi-camera"
+        truncate-length="15"
+        @change="handleUpload"
+      />
+
       <v-btn
+        v-if="profileUID === ''"
         class="cover-picker d-flex align-center justify-center"
         fab
         depressed
         color="white"
-        @click="dialog = !dialog"
+        @click="
+          $refs.coverFileInput.$el.childNodes[1].childNodes[0].childNodes[0].childNodes[1].click()
+        "
       >
         <v-icon>mdi-camera</v-icon>
       </v-btn>
     </div>
-    <v-dialog v-if="dialog" v-model="dialog" max-width="600" min-height="600">
+    <!-- <v-dialog v-if="dialog" v-model="dialog" max-width="600" min-height="600">
       <v-card class="pa-4">
         <v-row align="center">
           <v-col cols="12">
@@ -32,7 +49,7 @@
           </v-col>
         </v-row>
       </v-card>
-    </v-dialog>
+    </v-dialog> -->
   </div>
 </template>
 
@@ -42,7 +59,7 @@ import { user } from "@/store";
 
 export default Vue.extend({
   props: {
-    forceUrl: {
+    profileUID: {
       type: String,
       required: true,
     },
@@ -51,12 +68,22 @@ export default Vue.extend({
     return {
       dialog: false,
       file: Object,
+      coverUrl: "",
     };
   },
-  computed: {
-    getImg() {
-      return this.forceUrl !== "" ? this.forceUrl : user.$single.profileImgUrl;
-    },
+  mounted() {
+    this.coverUrl =
+      "https://p2.trrsf.com/image/fget/cf/1200/628/middle/images.terra.com/2019/04/09/mc-zoi-de-gato.jpeg";
+    if (this.profileUID) {
+      /* Other persons */
+      this.$fire.database
+        .ref(`/usuarios/${this.profileUID}`)
+        .on("value", (snapshot) => {
+          this.coverUrl = snapshot.val().coverUrl;
+        });
+    } else {
+      this.coverUrl = user.$single.coverUrl;
+    }
   },
   methods: {
     async handleUpload() {
@@ -69,10 +96,11 @@ export default Vue.extend({
           .put(file as any);
 
         const url = await snapshot.ref.getDownloadURL();
+        user.create({ ...user.$single, coverUrl: url } as any);
 
-        user.create({ ...user.$single, profileImgUrl: url } as any);
+        this.coverUrl = url;
         this.$fire.database.ref(`/users/${user.$single.uid}`).update({
-          profileImgUrl: url,
+          coverUrl: url,
         });
       } catch (error) {
         // console.error(error);
@@ -86,7 +114,6 @@ export default Vue.extend({
 .profile-cover {
   height: 160px;
   width: 100%;
-  //   background: url(https://media.istockphoto.com/photos/money-background-picture-id453623995);
   position: relative;
 
   .cover-picker {

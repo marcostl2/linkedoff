@@ -1,13 +1,15 @@
 <template>
   <div>
     <v-card class="pa-0" width="100%">
-      <UploadCoverImg :forceUrl="defaultUrl" />
+      <UploadCoverImg :profileUID="profileUID" />
       <ProfileImg />
       <v-container class="py-12 px-5 profile-container d-flex flex-column">
         <v-row>
           <v-col class="d-flex flex-column">
             <h2>{{ form.name }}</h2>
-            <span v-if="form.profession">{{ form.profession }}</span>
+            <span @notok="console.log('123')" v-if="form.profession">
+              {{ form.profession }}
+            </span>
             <span v-if="form.location">
               {{ form.location }}
             </span>
@@ -129,6 +131,7 @@
       v-if="dialog"
       :dialog="dialog"
       @closeDialog="dialog = !dialog"
+      @updateInfo="updateInfo"
     />
   </div>
 </template>
@@ -169,20 +172,12 @@ export default Vue.extend({
     this.profile =
       (!this.nickname && this.$route.fullPath === "/profile") ||
       user.$single.name === this.nickname.split("_").join(" ");
-
+    
     if (this.profile) {
       this.form.name = user.$single.name;
       this.form.profession = user.$single.profession;
       this.form.bio = user.$single.bio;
       this.form.location = user.$single.location;
-
-      /*
-      this.$fire.database
-        .ref(`users/${user.$single.uid}`)
-        .on("value", (snapshot) => {
-          this.form.location = snapshot.val().location;
-        });
-      */
     } else {
       const ref = this.$fire.database.ref("users");
 
@@ -199,10 +194,12 @@ export default Vue.extend({
         this.form.profession = cUser.profession;
         this.form.bio = cUser.bio;
         this.form.location = cUser.location;
-        this.defaultUrl = cUser.profileImgUrl;
+        this.defaultUrl = cUser.coverUrl;
 
-        let arrowHim = cUser.connections
-          ? cUser.connections.filter((c: any) => user.$single.uid in c).length >
+        console.log(this.defaultUrl)
+
+        let arrowHim = cUser.connections !== undefined
+        ? cUser.connections.filter((c: any) => user.$single.uid in c).length >
             0
           : false;
         let arrowMe =
@@ -211,7 +208,7 @@ export default Vue.extend({
                 (c: any) => this.profileUID in c
               ).length > 0
             : false;
-
+        
         if (!arrowMe && !arrowHim) this.status_connection = 0;
         else if (arrowMe && !arrowHim) this.status_connection = 1;
         else if (!arrowMe && arrowHim) this.status_connection = 2;
@@ -220,6 +217,11 @@ export default Vue.extend({
     }
   },
   methods: {
+    updateInfo(e: any) {
+      this.form.profession = e.profession;
+      this.form.bio = e.bio;
+    },
+
     // showPosition(position: any) {
     //   const latlon = position.coords.latitude + "," + position.coords.longitude;
     //   const geolocationApi =
@@ -285,7 +287,6 @@ export default Vue.extend({
       });
 
       user.create({ ...user.$single, connections } as any);
-
       this.$fire.database.ref(`/users/${user.$single.uid}`).update({
         connections,
       });
