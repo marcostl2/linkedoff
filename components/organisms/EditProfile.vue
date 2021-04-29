@@ -42,6 +42,7 @@
               color="primary"
               class="text-capitalize"
               large
+              :loading="loading"
               @click="create"
             >
               Salvar
@@ -60,6 +61,10 @@ import { user } from "@/store";
 export default Vue.extend({
   props: {
     dialog: {
+      required: true,
+      type: Boolean,
+    },
+    loading: {
       required: true,
       type: Boolean,
     },
@@ -94,7 +99,7 @@ export default Vue.extend({
 
         this.$emit("updateInfo", this.form);
       } catch (error) {
-        console.log(error);
+        // console.log(error);
         throw new Error("ERRO");
       }
     },

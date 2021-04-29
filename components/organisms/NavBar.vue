@@ -26,7 +26,7 @@
                 height="100%"
                 text
                 class="my-auto"
-                @click="$router.push('/')"
+                @click="$router.push('/vacancies')"
               >
                 Anunciar
                 <br />

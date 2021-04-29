@@ -1,5 +1,6 @@
 interface Vacancy {
     description: string,
+    title: string,
     id: number
 }
 

@@ -134,6 +134,7 @@
     <EditProfile
       v-if="dialog"
       :dialog="dialog"
+      :loading="loading"
       @closeDialog="dialog = !dialog"
       @updateInfo="updateInfo"
     />
@@ -150,6 +151,7 @@ export default Vue.extend({
   },
   data() {
     return {
+      loading: false,
       dialog: false,
       nickname: "", // slug
       profile: false,
@@ -221,8 +223,23 @@ export default Vue.extend({
   },
   methods: {
     updateInfo(e: any) {
+      this.loading = !this.loading;
       this.form.profession = e.profession;
       this.form.bio = e.bio;
+      user.create({
+        ...user.$single,
+        profession: e.profession,
+        bio: e.bio,
+      } as any);
+
+      this.$swal.fire({
+        title: "Dados atualizados com sucesso!",
+        icon: "success",
+        timer: 2000,
+      });
+
+      this.dialog = !this.dialog;
+      this.loading = !this.loading;
     },
 
     // showPosition(position: any) {

@@ -21,16 +21,7 @@ module.exports = {
     "vue/no-v-html": "off",
     "vue/singleline-html-element-content-newline": "off",
     "vue/multiline-html-element-content-newline": "off",
-    "vue/html-self-closing": [
-      "error",
-      {
-        html: {
-          void: "always",
-          normal: "never",
-          component: "always",
-        },
-      },
-    ],
+    "vue/html-self-closing": "off",
     "prefer-const": "off",
     "vue/attribute-hyphenation": "off",
   },
