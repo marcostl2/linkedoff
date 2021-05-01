@@ -24,11 +24,11 @@ import { user } from "@/store";
 export default Vue.extend({
   data() {
     return {
-      connections: null,
+      connections: [],
     };
   },
-  created() {
-    const ref = this.$fire.database.ref("/users/");
+  async created() {
+    const ref = await this.$fire.database.ref("/users/");
     ref.on("value", (snapshot) => {
       const uc = user.$single.connections
         ? user.$single.connections.map((t: any) => Object.keys(t)[0])

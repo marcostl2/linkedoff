@@ -1,5 +1,6 @@
 <template>
-  <ConnectionsTemplate />
+  <div></div>
+  <!-- <ConnectionsTemplate /> -->
 </template>
 
 <script lang="ts">

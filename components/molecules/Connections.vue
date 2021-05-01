@@ -39,31 +39,61 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { user } from "@/store";
+// import { user } from "@/store";
 
 export default Vue.extend({
   data() {
     return {
-      users: null,
+      users: [],
     };
   },
 
-  created() {
-    const ref = this.$fire.database.ref("/users/");
-    ref.on("value", (snapshot) => {
-      const uc = user.$single.connections
-        ? user.$single.connections.map((t: any) => Object.keys(t)[0])
-        : [];
-      const entries: any = Object.entries(snapshot.val());
-      let us = entries.filter((u: any) => {
-        const c = u[1].connections
-          ? u[1].connections.map((t: any) => Object.keys(t)[0])
-          : [];
-        return c.includes(user.$single.uid) && uc.includes(u[0]);
-      });
-      this.users = us;
-    });
-  },
+  // created() {
+  //   // let aux=[]
+  //   let connections = user.$single.connections;
+  //   for (let i of connections) {
+  //     const ref = this.$fire.database.ref(`/users/${i.uid}`);
+  //     // ref.on("value", (snapshot) => {
+  //       // let connection={
+  //       //   profileImgUrl:snapshot.val().profileImgUrl as string,
+  //       //   name:snapshot.val().name as string,
+  //       //   profession:snapshot.val().profession as string,
+  //       // }
+
+  //       // const entries: any = Object.entries(snapshot.val());
+  //       // let us = entries.filter((u: any) => {
+  //       //   const c = u[1].connections
+  //       //     ? u[1].connections.map((t: any) => Object.keys(t)[0])
+  //       //     : [];
+  //       //   return c.includes(user.$single.uid) && uc.includes(u[0]);
+  //       // });
+  //       // this.users = us;
+  //       // this.users.push(connection)
+  //     });
+  //   }
+  // },
+  // created() {
+  //   let aux=[]
+  //   let connections=user.$single.connections
+  //   for(let i of connections){
+
+  //   }
+  //   const ref = this.$fire.database.ref("/users/");
+  //   ref.on("value", (snapshot) => {
+
+  //     // const uc = user.$single.connections
+  //     //   ? user.$single.connections.map((t: any) => Object.keys(t)[0])
+  //     //   : [];
+  //     const entries: any = Object.entries(snapshot.val());
+  //     let us = entries.filter((u: any) => {
+  //       const c = u[1].connections
+  //         ? u[1].connections.map((t: any) => Object.keys(t)[0])
+  //         : [];
+  //       return c.includes(user.$single.uid) && uc.includes(u[0]);
+  //     });
+  //     this.users = us;
+  //   });
+  // },
 });
 </script>
 
