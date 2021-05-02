@@ -21,7 +21,7 @@ export default Vue.extend({
   },
   data() {
     return {
-      model: 1,
+      model: 0,
     };
   },
 });

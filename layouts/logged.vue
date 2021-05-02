@@ -14,9 +14,6 @@
               <v-col cols="12">
                 <Connections />
               </v-col>
-              <!-- <v-col cols="12">
-                <MapAside />
-              </v-col> -->
             </v-row>
           </v-col>
         </v-row>
@@ -29,12 +26,28 @@
 import Vue from "vue";
 import { user } from "@/store";
 
+interface Vacancy {
+  title: string;
+  description: string;
+}
+
 export default Vue.extend({
   middleware: "auth",
   created() {
     this.$fire.auth.onAuthStateChanged(() => this.handleSignOut());
 
     setInterval(() => this.reloadData(), 300000);
+
+    this.$fire.database
+      .ref(`vacancies/${user.$single.uid}`)
+      .on("value", (snapshot) => {
+        let values = snapshot.val() as Array<Vacancy>;
+        let aux: Vacancy[] = [];
+        for (let i in values) {
+          aux.push(values[i]);
+        }
+        user.create({ ...user.$single, vacancies: aux } as any);
+      });
 
     const ref = this.$fire.database.ref(
       `/users/${user.$single.uid}/connections`
@@ -81,6 +94,7 @@ export default Vue.extend({
               password: data.password,
               profileImgUrl: data.profileImgUrl,
               bio: data.bio,
+              isLogged: data.isLogged,
               coverUrl: data.coverUrl,
               latitude: data.latitude,
               profession: data.profession,

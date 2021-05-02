@@ -21,7 +21,7 @@
         </v-col>
         <v-col cols="12">
           <v-text-field
-            v-model="form.title"
+            v-model="form.description"
             label="Descrição"
             filled
             rounded
@@ -29,7 +29,9 @@
           ></v-text-field>
         </v-col>
         <v-col cols="12" align="center">
-          <v-btn color="primary">Criar vaga</v-btn>
+          <v-btn :loading="loading" color="primary" @click="createVacancy">
+            Criar vaga
+          </v-btn>
         </v-col>
       </v-row>
     </v-card>
@@ -38,6 +40,7 @@
 
 <script lang="ts">
 import Vue from "vue";
+import { user } from "@/store";
 
 export default Vue.extend({
   props: {
@@ -48,19 +51,32 @@ export default Vue.extend({
   },
   data() {
     return {
+      loading: false,
       form: {
         title: "",
         description: "",
       },
-      mapbox_token:
-        "pk.eyJ1IjoibWFyY29zdGwyIiwiYSI6ImNrZzc5ODJiczA1NHQycW53bm4xYTQyZW0ifQ.oVKrPl790Dca194Au2dmjA",
-      // icon: L.icon({
-      //   iconUrl: require("@/assets/images/raj.png"),
-      //   iconSize: [80, 80],
-      //   iconAnchor: [16, 37],
-      // }),
-      coords: [-20.896153599999998, -51.3933312],
     };
+  },
+  methods: {
+    createVacancy() {
+      this.loading = !this.loading;
+
+      let newPostKey = this.$fire.database.ref().child("vacancies").push().key;
+
+      let payload = {
+        title: this.form.title,
+        description: this.form.description,
+      };
+
+      let updates: { [key: string]: Object } = {};
+      updates["/vacancies/" + user.$single.uid + "/" + newPostKey] = payload;
+
+      this.$fire.database.ref().update(updates);
+
+      this.loading = !this.loading;
+      this.$emit("close");
+    },
   },
 });
 </script>

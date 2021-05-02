@@ -25,8 +25,9 @@ type Ttech = Array<{
 
 export interface User extends Company {
   name: string;
-  isCompany: Boolean;
+  isCompany: boolean;
   email: string;
+  logged: boolean,
   uid: string;
   profileImgUrl: string;
   bio: string;

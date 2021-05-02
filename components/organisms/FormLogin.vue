@@ -95,6 +95,7 @@ export default Vue.extend({
               password: data.password,
               profileImgUrl: data.profileImgUrl,
               bio: data.bio,
+              logged: true,
               coverUrl: data.coverUrl,
               latitude: data.latitude,
               longitude: data.longitude,

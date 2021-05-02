@@ -88,37 +88,34 @@
           <v-col>
             <v-card color="grey01" elevation="0" class="pa-4">
               <div class="d-flex justify-space-between mb-4">
-                <h3>Vagas</h3>
-                <v-btn small color="primary">Anunciar vagas</v-btn>
+                <h3>Últimas Vagas</h3>
+                <v-btn
+                  small
+                  color="primary"
+                  @click="$router.push('/vacancies')"
+                >
+                  Anunciar vagas
+                </v-btn>
               </div>
-              <div class="d-flex">
-                <v-card class="d-flex flex-column my-2 mr-4" max-width="300">
-                  <v-card-title>Vaga de motorista</v-card-title>
-                  <v-card-text>
-                    Lorem ipsum dolor sit, amet consectetur adipisicing elit.
-                    Voluptatibus odit eos praesentium voluptate pariatur?
-                    Itaque, molestiae. Quam atque rem beatae similique. Nemo
-                    quaerat molestias odio, vel tenetur veritatis perspiciatis
-                    animi.
-                  </v-card-text>
-                </v-card>
-                <v-card class="d-flex flex-column my-2 mr-4" max-width="300">
-                  <v-card-title>Vaga de motorista</v-card-title>
-                  <v-card-text>
-                    Lorem ipsum dolor sit, amet consectetur adipisicing elit.
-                    Voluptatibus odit eos praesentium voluptate pariatur?
-                    Itaque, molestiae. Quam atque rem beatae similique. Nemo
-                    quaerat molestias odio, vel tenetur veritatis perspiciatis
-                    animi.
-                  </v-card-text>
-                </v-card>
-              </div>
-              <div class="mt-2 d-flex flex-column align-center justify-center">
+              <v-row no-gutters>
+                <v-col v-for="(vacancy, i) in getVacancies" :key="i" cols="6">
+                  <v-card
+                    class="pa-4 d-flex flex-column my-2 mr-2"
+                    height="100%"
+                  >
+                    <h4>{{ vacancy.title }}</h4>
+                    <p>
+                      {{ vacancy.description }}
+                    </p>
+                  </v-card>
+                </v-col>
+              </v-row>
+              <div class="mt-6 d-flex flex-column align-center justify-center">
                 <v-btn text color="primary" class="mb-4">
                   Visualizar todas as vagas
                 </v-btn>
                 <v-btn
-                  v-if="isCompany && !visitProfile"
+                  v-if="!isCompany && !visitProfile"
                   block
                   color="primary"
                   class="mb-4"
@@ -127,6 +124,12 @@
                 </v-btn>
               </div>
             </v-card>
+          </v-col>
+          <v-col v-if="!hasLatLong" cols="12">
+            <AddLocation />
+          </v-col>
+          <v-col v-else cols="12">
+            <Map />
           </v-col>
         </v-row>
       </v-container>
@@ -171,6 +174,14 @@ export default Vue.extend({
   computed: {
     isCompany() {
       return user.$single.isCompany;
+    },
+    getVacancies() {
+      return user.$single.vacancies && user.$single.vacancies.length > 2
+        ? user.$single.vacancies.slice(0, 2)
+        : user.$single.vacancies;
+    },
+    hasLatLong() {
+      return user.$single.latitude && user.$single.longitude;
     },
   },
   mounted() {
@@ -235,7 +246,7 @@ export default Vue.extend({
       this.$swal.fire({
         title: "Dados atualizados com sucesso!",
         icon: "success",
-        timer: 2000,
+        timer: 1500,
       });
 
       this.dialog = !this.dialog;
@@ -248,18 +259,18 @@ export default Vue.extend({
     //     "http://api.positionstack.com/v1/reverse?access_key=630b083e74caa3e74e70c54012be6e2e&query=" +
     //     latlon;
 
-    // axios.get(geolocationApi).then((response: any) => {
-    //   this.$fire.database.ref(`/users/${user.$single.uid}`).update({
-    //     latitude: position.coords.latitude,
-    //     longitude: position.coords.longitude,
-    //     location:
-    //       response.data.data[0].county +
-    //       ", " +
-    //       response.data.data[0].region +
-    //       ", " +
-    //       response.data.data[0].country,
+    //   axios.get(geolocationApi).then((response: any) => {
+    //     this.$fire.database.ref(`/users/${user.$single.uid}`).update({
+    //       latitude: position.coords.latitude,
+    //       longitude: position.coords.longitude,
+    //       location:
+    //         response.data.data[0].county +
+    //         ", " +
+    //         response.data.data[0].region +
+    //         ", " +
+    //         response.data.data[0].country,
+    //     });
     //   });
-    // });
     // },
 
     // getGeo() {
@@ -314,3 +325,11 @@ export default Vue.extend({
   },
 });
 </script>
+
+<style lang="scss" scoped>
+.add-location {
+  border: 2px dashed #c2c2c2;
+  width: 100%;
+  padding: 20px 0;
+}
+</style>

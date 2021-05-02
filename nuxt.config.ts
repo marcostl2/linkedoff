@@ -32,6 +32,10 @@ export default {
     middleware: ["auth"],
   },
 
+  env: {
+    NUXT_APP_MAPBOX_TOKEN: "pk.eyJ1IjoibWFyY29zdGwyIiwiYSI6ImNrZzc5ODJiczA1NHQycW53bm4xYTQyZW0ifQ.oVKrPl790Dca194Au2dmjA",
+  },
+
   // Initialize Firebase
   // firebase.initializeApp(firebaseConfig);
   // firebase.analytics();

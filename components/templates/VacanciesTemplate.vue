@@ -1,8 +1,8 @@
 <template>
   <div>
     <v-container fill-height fluid class="pa-0">
-      <v-card min-height="600" max-height="45rem">
-        <v-row class="pa-4">
+      <v-card min-height="600" max-height="45rem" width="100%">
+        <v-row no-gutters class="pa-4">
           <v-col align-self="center">
             <h2>Suas vagas</h2>
           </v-col>
@@ -12,32 +12,24 @@
             </v-btn>
           </v-col>
         </v-row>
-        <div class="d-flex">
+        <div v-if="items.length > 0" class="d-flex">
           <div class="col-4 pa-0" style="overflow-y: hidden">
             <Vacancies :items="items" @clickedVacancy="handleVacancy($event)" />
           </div>
           <div class="col-8 py-0">
-            <v-card v-if="items.length > 0" outlined class="pa-6">
-              <p class="text-h3">{{ selectedJob.title }}</p>
+            <v-card outlined class="pa-6">
+              <p class="text-h4">{{ selectedJob.title }}</p>
               <p class="text-body-1">{{ selectedJob.description }}</p>
             </v-card>
           </div>
         </div>
-        <!-- <v-row
-          style="align-items: stretch !important"
-          class="fill-height"
-          no-gutters
+        <div
+          v-else
+          class="d-flex pa-4 violet01--text"
+          style="height: 100%; min-width: 300px"
         >
-          <v-col cols="4" class="d-flex flex-column" style="overflow: hidden">
-            <Vacancies :items="items" @clickedVacancy="handleVacancy($event)" />
-          </v-col>
-          <v-col min-height="100%" cols="8">
-            <v-card v-if="items.length > 0" outlined class="pa-6">
-              <p class="text-h3">{{ selectedJob.title }}</p>
-              <p class="text-body-1">{{ selectedJob.description }}</p>
-            </v-card>
-          </v-col>
-        </v-row> -->
+          <h2>Oops você não possui nenhuma vaga cadastrada</h2>
+        </div>
       </v-card>
     </v-container>
     <NewVacancyDialog
@@ -50,6 +42,7 @@
 
 <script lang="ts">
 import Vue from "vue";
+import { user } from "@/store";
 
 interface Vacancy {
   title: string;
@@ -61,130 +54,12 @@ export default Vue.extend({
     return {
       dialog: false,
       selectedJob: {},
-      items: [
-        {
-          title: "Especialista Sênior em jogo do bixo com mestrado e doutorado",
-          description: `Lorem ipsum, dolor sit amet consectetur adipisicing elit. Iusto
-            dicta harum veritatis non facilis quod voluptate perferendis! Iste
-            animi voluptatibus commodi repudiandae facilis natus consequatur
-            laudantium sit, dolorem officia adipisci?`,
-        },
-        {
-          title: "Especialista Sênior em jogo do bixo",
-          description: `Lorem ipsum, dolor sit amet consectetur adipisicing elit. Iusto
-            dicta harum veritatis non facilis quod voluptate perferendis! Iste
-            animi voluptatibus commodi repudiandae facilis natus consequatur
-            laudantium sit, dolorem officia adipisci?`,
-        },
-        {
-          title: "Especialista Sênior em jogo do bixo",
-          description: `Lorem ipsum, dolor sit amet consectetur adipisicing elit. Iusto
-            dicta harum veritatis non facilis quod voluptate perferendis! Iste
-            animi voluptatibus commodi repudiandae facilis natus consequatur
-            laudantium sit, dolorem officia adipisci?`,
-        },
-        {
-          title: "Especialista Sênior em jogo do bixo",
-          description: `Lorem ipsum, dolor sit amet consectetur adipisicing elit. Iusto
-            dicta harum veritatis non facilis quod voluptate perferendis! Iste
-            animi voluptatibus commodi repudiandae facilis natus consequatur
-            laudantium sit, dolorem officia adipisci?`,
-        },
-        {
-          title: "Especialista Sênior em jogo do bixo",
-          description: `Lorem ipsum, dolor sit amet consectetur adipisicing elit. Iusto
-            dicta harum veritatis non facilis quod voluptate perferendis! Iste
-            animi voluptatibus commodi repudiandae facilis natus consequatur
-            laudantium sit, dolorem officia adipisci?`,
-        },
-        {
-          title: "Especialista Sênior em jogo do bixo",
-          description: `Lorem ipsum, dolor sit amet consectetur adipisicing elit. Iusto
-            dicta harum veritatis non facilis quod voluptate perferendis! Iste
-            animi voluptatibus commodi repudiandae facilis natus consequatur
-            laudantium sit, dolorem officia adipisci?`,
-        },
-        {
-          title: "Especialista Sênior em jogo do bixo",
-          description: `Lorem ipsum, dolor sit amet consectetur adipisicing elit. Iusto
-            dicta harum veritatis non facilis quod voluptate perferendis! Iste
-            animi voluptatibus commodi repudiandae facilis natus consequatur
-            laudantium sit, dolorem officia adipisci?`,
-        },
-        {
-          title: "Especialista Sênior em jogo do bixo",
-          description: `Lorem ipsum, dolor sit amet consectetur adipisicing elit. Iusto
-            dicta harum veritatis non facilis quod voluptate perferendis! Iste
-            animi voluptatibus commodi repudiandae facilis natus consequatur
-            laudantium sit, dolorem officia adipisci?`,
-        },
-        {
-          title: "Especialista Sênior em jogo do bixo",
-          description: `Lorem ipsum, dolor sit amet consectetur adipisicing elit. Iusto
-            dicta harum veritatis non facilis quod voluptate perferendis! Iste
-            animi voluptatibus commodi repudiandae facilis natus consequatur
-            laudantium sit, dolorem officia adipisci?`,
-        },
-        {
-          title: "Especialista Sênior em jogo do bixo",
-          description: `Lorem ipsum, dolor sit amet consectetur adipisicing elit. Iusto
-            dicta harum veritatis non facilis quod voluptate perferendis! Iste
-            animi voluptatibus commodi repudiandae facilis natus consequatur
-            laudantium sit, dolorem officia adipisci?`,
-        },
-        {
-          title: "Especialista Sênior em jogo do bixo",
-          description: `Lorem ipsum, dolor sit amet consectetur adipisicing elit. Iusto
-            dicta harum veritatis non facilis quod voluptate perferendis! Iste
-            animi voluptatibus commodi repudiandae facilis natus consequatur
-            laudantium sit, dolorem officia adipisci?`,
-        },
-        {
-          title: "Especialista Sênior em jogo do bixo",
-          description: `Lorem ipsum, dolor sit amet consectetur adipisicing elit. Iusto
-            dicta harum veritatis non facilis quod voluptate perferendis! Iste
-            animi voluptatibus commodi repudiandae facilis natus consequatur
-            laudantium sit, dolorem officia adipisci?`,
-        },
-        {
-          title: "Especialista Sênior em jogo do bixo",
-          description: `Lorem ipsum, dolor sit amet consectetur adipisicing elit. Iusto
-            dicta harum veritatis non facilis quod voluptate perferendis! Iste
-            animi voluptatibus commodi repudiandae facilis natus consequatur
-            laudantium sit, dolorem officia adipisci?`,
-        },
-        {
-          title: "Especialista Sênior em jogo do bixo",
-          description: `Lorem ipsum, dolor sit amet consectetur adipisicing elit. Iusto
-            dicta harum veritatis non facilis quod voluptate perferendis! Iste
-            animi voluptatibus commodi repudiandae facilis natus consequatur
-            laudantium sit, dolorem officia adipisci?`,
-        },
-        {
-          title: "Especialista Sênior em jogo do bixo",
-          description: `Lorem ipsum, dolor sit amet consectetur adipisicing elit. Iusto
-            dicta harum veritatis non facilis quod voluptate perferendis! Iste
-            animi voluptatibus commodi repudiandae facilis natus consequatur
-            laudantium sit, dolorem officia adipisci?`,
-        },
-        {
-          title: "Especialista Sênior em jogo do bixo",
-          description: `Lorem ipsum, dolor sit amet consectetur adipisicing elit. Iusto
-            dicta harum veritatis non facilis quod voluptate perferendis! Iste
-            animi voluptatibus commodi repudiandae facilis natus consequatur
-            laudantium sit, dolorem officia adipisci?`,
-        },
-        {
-          title: "Especialista Sênior em jogo do bixo",
-          description: `Lorem ipsum, dolor sit amet consectetur adipisicing elit. Iusto
-            dicta harum veritatis non facilis quod voluptate perferendis! Iste
-            animi voluptatibus commodi repudiandae facilis natus consequatur
-            laudantium sit, dolorem officia adipisci?`,
-        },
-      ],
+      items: [{}],
     };
   },
   created() {
+    this.items = [];
+    this.items = user.$single.vacancies;
     this.selectedJob = this.items.length > 0 ? this.items[0] : {};
   },
   methods: {
@@ -195,4 +70,9 @@ export default Vue.extend({
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+.row {
+  height: inherit !important;
+  min-height: 100% !important;
+}
+</style>
