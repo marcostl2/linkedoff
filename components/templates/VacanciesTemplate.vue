@@ -12,9 +12,12 @@
             </v-btn>
           </v-col>
         </v-row>
-        <div v-if="items.length > 0" class="d-flex">
+        <div v-if="getItems.length > 0" class="d-flex">
           <div class="col-4 pa-0" style="overflow-y: hidden">
-            <Vacancies :items="items" @clickedVacancy="handleVacancy($event)" />
+            <Vacancies
+              :items="getItems"
+              @clickedVacancy="handleVacancy($event)"
+            />
           </div>
           <div class="col-8 py-0">
             <v-card outlined class="pa-6">
@@ -54,13 +57,15 @@ export default Vue.extend({
     return {
       dialog: false,
       selectedJob: {},
-      items: [{}],
     };
   },
+  computed: {
+    getItems() {
+      return user.$single.vacancies;
+    },
+  },
   created() {
-    this.items = [];
-    this.items = user.$single.vacancies;
-    this.selectedJob = this.items.length > 0 ? this.items[0] : {};
+    this.selectedJob = this.getItems.length > 0 ? this.getItems[0] : {};
   },
   methods: {
     handleVacancy(e: Vacancy) {
