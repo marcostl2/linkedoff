@@ -26,7 +26,7 @@
             <v-btn
               v-else-if="!profile && status_connection === 0"
               color="primary"
-              @click="addFriend()"
+              @click="addNotFriend()"
             >
               Solicitar Conexão
               <v-icon class="ml-2">mdi mdi-account-plus</v-icon>
@@ -34,7 +34,7 @@
             <v-btn
               v-else-if="!profile && status_connection === 1"
               color="warning"
-              @click="removeFriend()"
+              @click="removeFriendRequest()"
             >
               Cancelar Pedido de Amizade
               <v-icon class="ml-2">mdi mdi-account-plus</v-icon>
@@ -42,7 +42,7 @@
             <v-btn
               v-else-if="!profile && status_connection === 2"
               color="warning"
-              @click="addFriend()"
+              @click="addRealFriend()"
             >
               Aceitar Pedido de Amizade
               <v-icon class="ml-2">mdi mdi-account-plus</v-icon>
@@ -202,22 +202,30 @@ export default Vue.extend({
         this.form.location = cUser.location;
         this.defaultUrl = cUser.coverUrl;
 
-        let arrowHim =
-          cUser.connections !== undefined
-            ? cUser.connections.filter((c: any) => user.$single.uid in c)
-                .length > 0
-            : false;
-        let arrowMe =
-          user.$single.connections !== undefined
-            ? Array.from(user.$single.connections).filter(
-                (c: any) => this.profileUID in c
-              ).length > 0
-            : false;
+        this.status_connection = 0;
+        this.$fire.database
+          .ref(`users/${user.$single.uid}`)
+          .on("value", (snapshot) => {
+            let myRequests = snapshot.val().requests;
+            let myConnections = snapshot
+              .val()
+              .connections?.map((x: any) => x.uid);
 
-        if (!arrowMe && !arrowHim) this.status_connection = 0;
-        else if (arrowMe && !arrowHim) this.status_connection = 1;
-        else if (!arrowMe && arrowHim) this.status_connection = 2;
-        else if (arrowMe && arrowHim) this.status_connection = 3;
+            /* Friend Requests */
+            if (myRequests && myRequests.includes(this.profileUID)) {
+              this.status_connection = 2;
+            }
+
+            /* Already has a connection */
+            if (myConnections && myConnections.includes(this.profileUID)) {
+              this.status_connection = 3;
+            }
+
+            /* I send a request */
+            if (cUser.requests && cUser.requests.includes(user.$single.uid)) {
+              this.status_connection = 1;
+            }
+          });
       });
     }
   },
@@ -266,49 +274,134 @@ export default Vue.extend({
     //   navigator.geolocation.getCurrentPosition(this.showPosition);
     // },
 
-    addFriend() {
+    addNotFriend() {
       /* Get connections */
-      const ref = this.$fire.database.ref(`/users/${user.$single.uid}`);
-      let connections: any[] = [];
+      const ref = this.$fire.database.ref(`/users/${this.profileUID}`);
+      let requests: string[] = [];
+
       ref.on("value", (snapshot) => {
-        const cUser = snapshot.val();
+        const profileUser = snapshot.val();
 
         /* If in friends list */
-        if (cUser.connections) {
-          connections = Array.from(snapshot.val().connections);
-          connections.push({ [this.profileUID]: new Date() });
+        if (profileUser.requests) {
+          requests = Array.from(snapshot.val().requests);
+          requests.push(user.$single.uid);
         } else {
-          connections = [{ [this.profileUID]: new Date() }];
+          requests = [user.$single.uid];
         }
       });
 
-      user.create({ ...user.$single, connections } as any);
+      this.$fire.database.ref(`/users/${this.profileUID}`).update({
+        requests,
+      });
+    },
 
+    removeFriendRequest() {
+      const ref = this.$fire.database.ref(`/users/${this.profileUID}`);
+
+      let requests: any[] = [];
+      ref.on("value", (snapshot) => {
+        const profileUser = snapshot.val();
+
+        /* If in friends list */
+        if (profileUser.requests) {
+          requests = Array.from(profileUser.requests).filter(
+            (x: any) => user.$single.uid !== x
+          );
+        }
+      });
+      this.$fire.database.ref(`/users/${this.profileUID}`).update({
+        requests,
+      });
+    },
+
+    addRealFriend() {
+      const ref = this.$fire.database.ref(`/users/${this.profileUID}`);
+      let otherProfileConnections: { uid: string; since: string }[] = [];
+      let cUserConnections: { uid: string; since: string }[] = [];
+      let cUserRequests: string[] = [];
+
+      ref.on("value", (snapshot): void => {
+        /* Add a new connection in friend pool */
+        otherProfileConnections = snapshot.val().connections
+          ? snapshot.val().connections
+          : [];
+        otherProfileConnections.push({
+          uid: user.$single.uid,
+          since: new Date().toJSON(),
+        });
+      });
+      this.$fire.database
+        .ref(`/users/${user.$single.uid}`)
+        .on("value", (snapshot) => {
+          /* Add a new connection in user pool */
+          cUserConnections = snapshot.val().connections
+            ? snapshot.val().connections
+            : [];
+          cUserConnections.push({
+            uid: this.profileUID,
+            since: new Date().toJSON(),
+          });
+          /* Removes friend request in user pool  */
+          cUserRequests = snapshot.val().requests
+            ? snapshot.val().requests
+            : [];
+          cUserRequests = cUserRequests.filter(
+            (x: any) => x !== this.profileUID
+          );
+        });
+      /* Updates in database for friend */
+      this.$fire.database
+        .ref(`/users/${this.profileUID}`)
+        .update({ connections: otherProfileConnections });
+
+      /* Updates in database for user */
       this.$fire.database.ref(`/users/${user.$single.uid}`).update({
-        connections,
+        connections: cUserConnections,
+        requests: cUserRequests,
+      });
+      user.create({
+        ...user.$single,
+        connections: cUserConnections,
+        requests: cUserRequests,
       });
     },
 
     removeFriend() {
-      const ref = this.$fire.database.ref(`/users/${user.$single.uid}`);
+      const refOther = this.$fire.database.ref(`/users/${this.profileUID}`);
+      const refUser = this.$fire.database.ref(`/users/${user.$single.uid}`);
+      let otherProfileConnections: { uid: string; since: string }[] = [];
+      let cUserConnections: { uid: string; since: string }[] = [];
 
-      let connections: any[] | undefined = [];
-      ref.on("value", (snapshot) => {
-        const cUser = snapshot.val();
-
-        /* If in friends list */
-        if (cUser.connections) {
-          connections = Array.from(snapshot.val().connections).filter(
-            (x: any) => !(this.profileUID in x)
-          );
-        } else {
-          connections = undefined;
-        }
+      /* Remove connection on friend */
+      refOther.on("value", (snapshot) => {
+        otherProfileConnections = snapshot.val().connections
+          ? snapshot.val().connections
+          : [];
+        otherProfileConnections = otherProfileConnections.filter(
+          (x: any) => x.uid !== user.$single.uid
+        );
       });
 
-      user.create({ ...user.$single, connections } as any);
-      this.$fire.database.ref(`/users/${user.$single.uid}`).update({
-        connections,
+      /* Remove connection on user */
+      refUser.on("value", (snapshot) => {
+        cUserConnections = snapshot.val().connections
+          ? snapshot.val().connections
+          : [];
+
+        cUserConnections = cUserConnections.filter(
+          (x: any) => x.uid !== this.profileUID
+        );
+      });
+
+      /* Updates friend profile */
+      refOther.update({
+        connections: otherProfileConnections,
+      });
+
+      /* Updates user profile */
+      refUser.update({
+        connections: cUserConnections,
       });
     },
   },
