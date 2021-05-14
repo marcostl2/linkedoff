@@ -1,4 +1,5 @@
 import { Company } from "./Company";
+import { Posts } from "./Posts";
 
 /* Formation that will be used in the User class */
 type Tfm =
@@ -23,7 +24,7 @@ type Ttech = Array<{
 //   date: Date
 // }>;
 
-export interface User extends Company {
+export interface User extends Company, Posts {
   name: string;
   isCompany: boolean;
   email: string;

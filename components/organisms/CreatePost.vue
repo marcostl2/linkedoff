@@ -2,21 +2,20 @@
   <div class="mb-4">
     <v-card class="d-flex pa-4 flex-column">
       <div class="d-flex">
-        <img :src="getImage" alt="Image" />
+        <img :src="getImage" alt="Image" id="profile-img" />
         <button
           id="create-post"
           type="text"
-          class="ml-4"
+          class="mx-4"
           placeholder="Criar nova publicação"
           @click="dialog = !dialog"
         >
           Criar nova publicação
         </button>
+        <v-btn fab depressed color="primary" @click="dialog = !dialog">
+          <v-icon>mdi-plus</v-icon>
+        </v-btn>
       </div>
-      <v-btn text class="mt-4" color="primary">
-        <v-icon class="mr-2">mdi-image-multiple-outline</v-icon>
-        Foto
-      </v-btn>
     </v-card>
     <v-dialog v-model="dialog" max-width="600">
       <v-card class="pa-4 d-flex flex-column">
@@ -26,8 +25,32 @@
             <v-icon>mdi-close</v-icon>
           </v-btn>
         </div>
-        <v-textarea filled rounded placeholder="Escreva algo"></v-textarea>
-        <v-btn color="primary">Criar</v-btn>
+        <v-textarea
+          v-model="form.content"
+          filled
+          rounded
+          placeholder="Escreva algo"
+        ></v-textarea>
+        <!-- <v-btn text class="mb-6" color="primary">
+          <v-icon class="mr-2">mdi-image-multiple-outline</v-icon>
+          Foto
+        </v-btn> -->
+        <v-file-input
+          v-model="form.file"
+          label="Escolha uma imagem para o post"
+          filled
+          accept="image/*"
+          rounded
+          prepend-icon="mdi-camera"
+          @change="loadImage"
+        ></v-file-input>
+        <img
+          v-if="form.imageUrl && form.file"
+          class="preview-img mx-auto mb-4"
+          :src="form.imageUrl"
+          alt="Imagem"
+        />
+        <v-btn color="primary" @click="create">Criar</v-btn>
       </v-card>
     </v-dialog>
   </div>
@@ -35,24 +58,78 @@
 
 <script lang="ts">
 import Vue from "vue";
+import { object, string } from "yup";
 import { user } from "@/store";
 
 export default Vue.extend({
   data() {
     return {
       dialog: false,
+      form: {
+        file: null,
+        imageUrl: "",
+        content: "",
+      },
+      loginFormSchema: object().shape({
+        content: string().required("Escreva o conteúdo do post"),
+      }),
     };
   },
   computed: {
     getImage() {
-      return user.$single.profileImgUrl;
+      return user.$single.profileImgUrl
+        ? user.$single.profileImgUrl
+        : "@/assets/images/default-profile.jpg";
+    },
+  },
+  methods: {
+    async create() {
+      try {
+        let id =
+          Math.random().toString(36).substring(2, 15) +
+          Math.random().toString(36).substring(2, 15);
+
+        let url = null;
+        if (this.form.imageUrl && this.form.file) {
+          let snap = await this.$fire.storage
+            .ref(`posts/${user.$single.uid}`)
+            .child(`${id}`)
+            .put(this.form.file as any);
+          url = await snap.ref.getDownloadURL();
+        }
+
+        let snapPost = this.$fire.database.ref(
+          `posts/${user.$single.uid}/${id}`
+        );
+        const payload = {
+          content: this.form.content,
+          likes: 0,
+          date: +new Date(),
+          imageUrl: url || "",
+        };
+        console.log(payload);
+        snapPost.set(payload);
+
+        this.dialog = !this.dialog;
+
+        this.form.file = null;
+        this.form.imageUrl = "";
+        this.form.content = "";
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    loadImage() {
+      this.form.imageUrl = window.URL.createObjectURL(
+        new Blob([this.form.file] as any)
+      );
     },
   },
 });
 </script>
 
 <style scoped lang="scss">
-img {
+#profile-img {
   width: 50px;
   height: 50px;
   border-radius: 50%;
@@ -70,5 +147,10 @@ img {
   &:hover {
     background: #ebebeb;
   }
+}
+
+.preview-img {
+  max-height: 300px;
+  max-width: 300px;
 }
 </style>
