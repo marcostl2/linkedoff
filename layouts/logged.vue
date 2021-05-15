@@ -33,7 +33,7 @@ interface Vacancy {
 
 export default Vue.extend({
   middleware: "auth",
-  created() {
+  async created() {
     this.$fire.auth.onAuthStateChanged(() => this.handleSignOut());
 
     setInterval(() => this.reloadData(), 300000);
@@ -49,23 +49,27 @@ export default Vue.extend({
         user.create({ ...user.$single, vacancies: aux } as any);
       });
 
-    const ref = this.$fire.database.ref(
-      `/users/${user.$single.uid}/connections`
-    );
-    ref.on("value", (snapshot) => {
-      // const uc = user.$single.connections
-      //   ? user.$single.connections.map((t: any) => Object.keys(t)[0])
-      //   : [];
-      // const entries: any = Object.entries(snapshot.val());
-      // let us = entries.filter((u: any) => {
-      //   const c = u[1].connections
-      //     ? u[1].connections.map((t: any) => Object.keys(t)[0])
-      //     : [];
-      //   return c.includes(user.$single.uid) && uc.includes(u[0]);
-      // });
-      user.create({ ...user.$single, connections: snapshot.val() } as any);
-      // this.connections = us;
+    const refPosts = await this.$fire.database.ref(`posts/${user.$single.uid}`);
+    refPosts.on("value", (snapshot) => {
+      user.create({ ...user.$single, posts: snapshot.val() } as any);
     });
+
+    // const ref = this.$fire.database.ref(
+    //   `/users/${user.$single.uid}/connections`
+    // );
+    // ref.on("value", (snapshot) => {
+    // const uc = user.$single.connections
+    //   ? user.$single.connections.map((t: any) => Object.keys(t)[0])
+    //   : [];
+    // const entries: any = Object.entries(snapshot.val());
+    // let us = entries.filter((u: any) => {
+    //   const c = u[1].connections
+    //     ? u[1].connections.map((t: any) => Object.keys(t)[0])
+    //     : [];
+    //   return c.includes(user.$single.uid) && uc.includes(u[0]);
+    // });
+    //   user.create({ ...user.$single, connections: snapshot.val() } as any);
+    // });
   },
   methods: {
     handleSignOut() {
