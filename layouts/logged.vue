@@ -100,6 +100,8 @@ export default Vue.extend({
               profession: data.profession,
               longitude: data.longitude,
               isCompany: data.isCompany,
+              connections: data.connections,
+              requests: data.requests,
             };
 
             user.create({ ...payload, uid } as any);

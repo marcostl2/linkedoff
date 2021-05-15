@@ -3,10 +3,10 @@ import { Company } from "./Company";
 /* Formation that will be used in the User class */
 type Tfm =
   | {
-    inst: string /* Institution */;
-    area: string | undefined;
-    degree: string | undefined;
-  }
+      inst: string /* Institution */;
+      area: string | undefined;
+      degree: string | undefined;
+    }
   | undefined;
 
 // /* Set of Technologies that will be user in the User class */
@@ -40,4 +40,5 @@ export interface User extends Company {
   formation: Tfm;
   techs: Ttech;
   connections: any[];
+  requests: string[];
 }
