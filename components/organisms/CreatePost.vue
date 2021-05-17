@@ -2,7 +2,7 @@
   <div class="mb-4">
     <v-card class="d-flex pa-4 flex-column">
       <div class="d-flex">
-        <img :src="getImage" alt="Image" id="profile-img" />
+        <img id="profile-img" :src="getImage" alt="Image" />
         <button
           id="create-post"
           type="text"
@@ -19,12 +19,29 @@
     </v-card>
     <v-dialog v-model="dialog" max-width="600">
       <v-card class="pa-4 d-flex flex-column">
-        <div class="d-flex justify-space-between align-center mb-4">
+        <div class="d-flex justify-space-between align-center">
           <h3>Nova publicação</h3>
           <v-btn icon @click="dialog = !dialog">
             <v-icon>mdi-close</v-icon>
           </v-btn>
         </div>
+        <v-tooltip color="primary">
+          <template v-slot:activator="{ on, attrs }">
+            <div v-bind="attrs" v-on="on">
+              <v-checkbox
+                v-model="form.globalScope"
+                label="Escopo Global"
+                color="primary"
+                hide-details
+                class="mb-4"
+              ></v-checkbox>
+            </div>
+          </template>
+          <span>
+            Caso o escopo não for global apenas suas conexões podem ver a
+            publicação.
+          </span>
+        </v-tooltip>
         <v-textarea
           v-model="form.content"
           filled
@@ -35,6 +52,7 @@
           <v-icon class="mr-2">mdi-image-multiple-outline</v-icon>
           Foto
         </v-btn> -->
+
         <v-file-input
           v-model="form.file"
           label="Escolha uma imagem para o post"
@@ -50,7 +68,7 @@
           :src="form.imageUrl"
           alt="Imagem"
         />
-        <v-btn color="primary" @click="create">Criar</v-btn>
+        <v-btn color="primary" @click="create"></v-btn>
       </v-card>
     </v-dialog>
   </div>
@@ -69,6 +87,7 @@ export default Vue.extend({
         file: null,
         imageUrl: "",
         content: "",
+        globalScope: true,
       },
       loginFormSchema: object().shape({
         content: string().required("Escreva o conteúdo do post"),
@@ -103,11 +122,11 @@ export default Vue.extend({
         );
         const payload = {
           content: this.form.content,
-          likes: 0,
-          date: +new Date(),
+          likes: [],
+          date: new Date().toJSON(),
+          global: this.form.globalScope,
           imageUrl: url || "",
         };
-        console.log(payload);
         snapPost.set(payload);
 
         this.dialog = !this.dialog;

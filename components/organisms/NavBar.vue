@@ -33,11 +33,18 @@
                 vagas
               </v-btn>
             </v-col>
-            <v-col :cols="isCompany ? 7 : 9">
+            <v-col :cols="isCompany ? 6 : 8">
               <SearchBar />
             </v-col>
-            <v-col cols="1">
-              <ProfileAvatar />
+            <v-col cols="2">
+              <v-row>
+                <v-col cols="auto" class="d-flex align-center justify-center">
+                  <Notifications />
+                </v-col>
+                <v-col>
+                  <ProfileAvatar />
+                </v-col>
+              </v-row>
             </v-col>
           </v-row>
         </v-col>
@@ -58,5 +65,3 @@ export default Vue.extend({
   },
 });
 </script>
-
-<style scoped></style>

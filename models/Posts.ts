@@ -1,17 +1,19 @@
 interface Comment {
-    uid: string,
-    content: string
+  uid: string;
+  content: string;
 }
 
 interface Post {
-    content: string,
-    imageUrl: string,
-    likes: number,
-    date: number,
-    comments: Array<Comment>
+  uid: string;
+  content: string;
+  imageUrl: string;
+  likes: string[];
+  date: number;
+  comments: Array<Comment>;
+  owner: string;
+  global: boolean;
 }
 
 export interface Posts {
-    posts: Array<Post>
+  posts: Array<Post>;
 }
-
