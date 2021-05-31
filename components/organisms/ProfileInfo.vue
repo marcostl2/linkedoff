@@ -67,7 +67,7 @@
             <ProfileAbout :bio="form.bio" />
           </v-col>
         </v-row>
-        <v-row v-if="!isCompany">
+        <!-- <v-row>
           <v-col>
             <v-card color="grey01" elevation="0" class="pa-4">
               <div class="d-flex justify-space-between mb-4">
@@ -83,13 +83,14 @@
               </v-chip>
             </v-card>
           </v-col>
-        </v-row>
-        <v-row v-else>
+        </v-row> -->
+        <v-row v-if="form.isCompany">
           <v-col>
             <v-card color="grey01" elevation="0" class="pa-4">
               <div class="d-flex justify-space-between mb-4">
                 <h3>Últimas Vagas</h3>
                 <v-btn
+                  v-if="!visitProfile"
                   small
                   color="primary"
                   @click="$router.push('/vacancies')"
@@ -111,9 +112,15 @@
                 </v-col>
               </v-row>
               <div class="mt-6 d-flex flex-column align-center justify-center">
-                <v-btn text color="primary" class="mb-4">
+                <v-btn
+                  v-if="getVacancies.length"
+                  text
+                  color="primary"
+                  class="mb-4"
+                >
                   Visualizar todas as vagas
                 </v-btn>
+                <h4 v-if="!getVacancies.length">Nenhuma vaga no momento</h4>
                 <v-btn
                   v-if="!isCompany && !visitProfile"
                   block
@@ -128,7 +135,7 @@
           <v-col v-if="!hasLatLong" cols="12">
             <AddLocation />
           </v-col>
-          <v-col v-else cols="12">
+          <v-col v-if="!visitProfile" cols="12">
             <Map />
           </v-col>
         </v-row>
@@ -163,6 +170,7 @@ export default Vue.extend({
         profession: "",
         bio: "",
         location: "",
+        isCompany: false,
       },
       techs: ["Cobol", "Python", "Javascript"],
       /* Other profiles */
@@ -210,6 +218,7 @@ export default Vue.extend({
         this.form.name = cUser.name;
         this.form.profession = cUser.profession;
         this.form.bio = cUser.bio;
+        this.form.isCompany = cUser.isCompany;
         this.form.location = cUser.location;
         this.defaultUrl = cUser.coverUrl;
 

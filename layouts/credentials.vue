@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-container style="height: 100vh" class="ma-0 pa-0" fluid>
+    <v-container style="height: 100%" class="ma-0 pa-0" fluid>
       <v-row no-gutters>
         <v-col cols="4" class="d-none d-md-block">
           <SideBar />
@@ -10,9 +10,7 @@
           md="8"
           class="form-section d-flex align-center justify-center px-4"
         >
-          <slot>
-            <Nuxt />
-          </slot>
+          <Nuxt />
         </v-col>
       </v-row>
     </v-container>

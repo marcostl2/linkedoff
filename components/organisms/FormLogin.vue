@@ -1,5 +1,5 @@
 <template>
-  <v-card max-width="600" class="pa-16">
+  <v-card max-width="600" class="pa-8 pa-md-16">
     <v-form @submit.prevent="handleSubmit">
       <v-row>
         <v-col cols="12" align="center">

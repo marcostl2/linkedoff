@@ -7,9 +7,8 @@
             <div class="d-flex main mt-4">
               <img
                 :src="
-                  result.profileImgUrl
-                    ? result.profileImgUrl
-                    : 'https://storage.googleapis.com/kondzilla-wp/2020/07/marks2.jpg'
+                  result.profileImgUrl ||
+                  require('@/assets/images/default-profile.png')
                 "
                 alt="Profile Connection"
               />
@@ -31,6 +30,7 @@
 
 <script lang="ts">
 import Vue from "vue";
+import { user } from "@/store";
 
 export default Vue.extend({
   data() {
@@ -44,6 +44,10 @@ export default Vue.extend({
   },
   methods: {
     matchStrings(snap: any): boolean {
+      /* Dont allow user search by himself */
+      if (snap[0] === user.$single.uid) {
+        return false;
+      }
       return snap[1].name
         .toLowerCase()
         .includes(

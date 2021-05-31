@@ -2,7 +2,11 @@
   <div class="mb-4">
     <v-card class="d-flex pa-4 flex-column">
       <div class="d-flex">
-        <img id="profile-img" :src="getImage" alt="Image" />
+        <img
+          id="profile-img"
+          :src="getImage || require('@/assets/images/default-profile.png')"
+          alt="Image"
+        />
         <button
           id="create-post"
           type="text"
@@ -26,7 +30,7 @@
           </v-btn>
         </div>
         <v-tooltip color="primary">
-          <template v-slot:activator="{ on, attrs }">
+          <template #activator="{ on, attrs }">
             <div v-bind="attrs" v-on="on">
               <v-checkbox
                 v-model="form.globalScope"
@@ -48,11 +52,6 @@
           rounded
           placeholder="Escreva algo"
         ></v-textarea>
-        <!-- <v-btn text class="mb-6" color="primary">
-          <v-icon class="mr-2">mdi-image-multiple-outline</v-icon>
-          Foto
-        </v-btn> -->
-
         <v-file-input
           v-model="form.file"
           label="Escolha uma imagem para o post"
@@ -68,7 +67,9 @@
           :src="form.imageUrl"
           alt="Imagem"
         />
-        <v-btn color="primary" @click="create"></v-btn>
+        <v-btn color="primary" :loading="loading" @click="create">
+          Criar publicação
+        </v-btn>
       </v-card>
     </v-dialog>
   </div>
@@ -83,6 +84,7 @@ export default Vue.extend({
   data() {
     return {
       dialog: false,
+      loading: false,
       form: {
         file: null,
         imageUrl: "",
@@ -96,14 +98,13 @@ export default Vue.extend({
   },
   computed: {
     getImage() {
-      return user.$single.profileImgUrl
-        ? user.$single.profileImgUrl
-        : "@/assets/images/default-profile.jpg";
+      return user.$single.profileImgUrl;
     },
   },
   methods: {
     async create() {
       try {
+        this.loading = !this.loading;
         let id =
           Math.random().toString(36).substring(2, 15) +
           Math.random().toString(36).substring(2, 15);
@@ -134,7 +135,10 @@ export default Vue.extend({
         this.form.file = null;
         this.form.imageUrl = "";
         this.form.content = "";
+
+        this.loading = !this.loading;
       } catch (error) {
+        this.loading = !this.loading;
         console.log(error);
       }
     },
@@ -169,7 +173,7 @@ export default Vue.extend({
 }
 
 .preview-img {
-  max-height: 300px;
-  max-width: 300px;
+  max-height: 200px;
+  max-width: 200px;
 }
 </style>

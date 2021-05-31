@@ -1,7 +1,5 @@
 <template>
-  <div>
-    <LoginTemplate />
-  </div>
+  <LoginTemplate />
 </template>
 
 <script lang="ts">

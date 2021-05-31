@@ -14,12 +14,14 @@
           </div>
         </v-col>
       </v-row>
-      <ClientOnly style="width: 100%; height: 100%">
+      <client-only style="width: 100%; height: 100%">
         <LMap
+          ref="map"
           style="height: 100%; width: 100%"
           :zoom="16"
           :center="[coords[0], coords[1]]"
           @click="updateCoords"
+          @ready="repaintMap"
         >
           <l-tile-layer
             :url="`https://api.mapbox.com/styles/v1/mapbox/light-v10/tiles/256/{z}/{x}/{y}@2x?access_token=${mapbox_token}`"
@@ -41,7 +43,7 @@
             </l-tooltip> -->
           </l-marker>
         </LMap>
-      </ClientOnly>
+      </client-only>
       <v-btn class="mt-4" color="primary" @click="saveCoords">
         Salvar localização
       </v-btn>
@@ -49,16 +51,9 @@
   </v-dialog>
 </template>
 
-<script lang="ts">
+<script>
 import Vue from "vue";
 import { user } from "@/store";
-
-interface Coord {
-  latlng: {
-    lat: number;
-    lng: number;
-  };
-}
 
 export default Vue.extend({
   props: {
@@ -73,18 +68,19 @@ export default Vue.extend({
       //   iconSize: [80, 80],
       //   iconAnchor: [16, 37],
       // }),
-      coords: [-20.896153599999998, -51.3933312],
+      coords: [-20.7598, -51.6951],
     };
   },
   mounted() {
     this.$fire.database
       .ref(`users/${user.$single.uid}`)
       .on("value", (snapshot) => {
-        this.coords = [snapshot.val().latitude, snapshot.val().longitude];
+        if (snapshot.val().latitude && snapshot.val().longitude)
+          this.coords = [snapshot.val().latitude, snapshot.val().longitude];
       });
   },
   methods: {
-    updateCoords(e: Coord): void {
+    updateCoords(e) {
       this.coords = [e.latlng.lat, e.latlng.lng];
       //   const coordsUrl =
       //     "http://api.positionstack.com/v1/reverse?access_key=630b083e74caa3e74e70c54012be6e2e&query=" +
@@ -112,6 +108,11 @@ export default Vue.extend({
         title: "Localização atualizada com sucesso!",
         icon: "success",
         timer: 1500,
+      });
+    },
+    repaintMap() {
+      this.$nextTick(() => {
+        this.$refs.map.mapObject.invalidateSize();
       });
     },
   },

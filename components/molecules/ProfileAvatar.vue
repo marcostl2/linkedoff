@@ -1,7 +1,10 @@
 <template>
   <a class="d-flex flex-column">
-    <v-avatar s color="primary" size="40" tile>
-      <img :src="profileImgUrl" alt="Imagem de Perfil" />
+    <v-avatar size="40" tile>
+      <img
+        :src="profileImgUrl || require('@/assets/images/default-profile.png')"
+        alt="Imagem de Perfil"
+      />
     </v-avatar>
     <v-menu offset-y>
       <template #activator="{ on, attrs }">
@@ -41,9 +44,7 @@ export default Vue.extend({
     this.$fire.database
       .ref(`/users/${user.$single.uid}`)
       .on("value", (snapshot) => {
-        this.profileImgUrl = snapshot.val().profileImgUrl
-          ? snapshot.val().profileImgUrl
-          : "https://storage.googleapis.com/kondzilla-wp/2020/07/marks2.jpg";
+        this.profileImgUrl = snapshot.val().profileImgUrl;
       });
   },
   methods: {

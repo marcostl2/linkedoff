@@ -20,13 +20,13 @@
           ></v-text-field>
         </v-col>
         <v-col cols="12">
-          <v-text-field
+          <v-textarea
             v-model="form.description"
             label="Descrição"
             filled
             rounded
             dense
-          ></v-text-field>
+          ></v-textarea>
         </v-col>
         <v-col cols="12" align="center">
           <v-btn :loading="loading" color="primary" @click="createVacancy">
@@ -76,6 +76,12 @@ export default Vue.extend({
 
       this.loading = !this.loading;
       this.$emit("close");
+
+      this.$swal.fire({
+        title: "Vaga criada com sucesso!",
+        icon: "success",
+        timer: 1500,
+      });
     },
   },
 });

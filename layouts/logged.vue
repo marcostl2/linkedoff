@@ -1,15 +1,24 @@
 <template>
   <v-app>
-    <v-container fluid class="pa-0 ma-0">
-      <NavBar />
-    </v-container>
+    <v-navigation-drawer
+      v-show="drawer"
+      v-model="drawer"
+      absolute
+      right
+      class="pt-8 px-0"
+    >
+      <MobileMenu />
+    </v-navigation-drawer>
+    <div fluid class="pa-0 ma-0">
+      <NavBar @handleMenu="drawer = !drawer" />
+    </div>
     <main>
-      <v-container class="d-flex" fluid style="max-width: 1160px" ;>
-        <v-row class="py-6">
-          <v-col cols="9">
+      <v-container fluid style="max-width: 1160px" ;>
+        <v-row>
+          <v-col cols="12" md="9">
             <Nuxt />
           </v-col>
-          <v-col cols="3">
+          <v-col cols="3" class="d-none d-md-flex">
             <v-row column>
               <v-col cols="12">
                 <Connections />
@@ -33,10 +42,18 @@ interface Vacancy {
 
 export default Vue.extend({
   middleware: "auth",
+  data() {
+    return {
+      drawer: false,
+    };
+  },
+  computed: {
+    showMenu(): Boolean {
+      return this.drawer;
+    },
+  },
   async created() {
     this.$fire.auth.onAuthStateChanged(() => this.handleSignOut());
-
-    setInterval(() => this.reloadData(), 300000);
 
     this.$fire.database
       .ref(`vacancies/${user.$single.uid}`)
@@ -120,6 +137,10 @@ export default Vue.extend({
 </script>
 
 <style lang="scss">
+body {
+  background-color: #f1f1f1;
+  height: 100vh;
+}
 main {
   width: 100%;
   height: 100%;

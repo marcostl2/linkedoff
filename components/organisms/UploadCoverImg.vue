@@ -2,7 +2,9 @@
   <div>
     <div
       class="profile-cover"
-      :style="`background:url('${coverUrl}') center center / cover no-repeat`"
+      :style="`background:url('${
+        coverUrl || require('@/assets/images/default-cover.png')
+      }') center center / cover no-repeat`"
     >
       <v-file-input
         v-show="false"
@@ -78,21 +80,17 @@ export default Vue.extend({
         this.profileUID = users[0][0];
       }
 
-      this.coverUrl =
-        "https://p2.trrsf.com/image/fget/cf/1200/628/middle/images.terra.com/2019/04/09/mc-zoi-de-gato.jpeg";
-
       if (this.profileUID) {
         /* Other persons */
         this.$fire.database
           .ref(`/users/${this.profileUID}`)
           .on("value", (snapshot) => {
-            this.coverUrl =
-              snapshot.val().coverUrl !== ""
-                ? snapshot.val().coverUrl
-                : this.coverUrl;
+            this.coverUrl = snapshot.val().coverUrl;
           });
       } else {
-        this.coverUrl = user.$single.coverUrl ? user.$single.coverUrl : this.coverUrl;
+        this.coverUrl = user.$single.coverUrl
+          ? user.$single.coverUrl
+          : this.coverUrl;
       }
     });
   },

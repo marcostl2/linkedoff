@@ -1,55 +1,84 @@
 <template>
   <div>
-    <!-- <v-card v-for="(con, i) in connections" :key="i" class="pa-4">
-      <v-card>
-        <div class="d-flex">
-          <img
-            width="40"
-            height="40"
-            :src="getImage(con.profileImgUrl)"
-            alt="Image"
-          />
-          <span>{{ con.name }}</span>
-          {{ con }}
-        </div>
-      </v-card>
-    </v-card> -->
+    <v-card v-if="loading" class="pa-4">
+      <v-skeleton-loader
+        class="mb-4"
+        type="list-item-avatar"
+      ></v-skeleton-loader>
+      <v-skeleton-loader
+        class="mb-4"
+        type="list-item-avatar"
+      ></v-skeleton-loader>
+      <v-skeleton-loader
+        class="mb-4"
+        type="list-item-avatar"
+      ></v-skeleton-loader>
+      <v-skeleton-loader
+        class="mb-4"
+        type="list-item-avatar"
+      ></v-skeleton-loader>
+    </v-card>
+    <v-card v-else class="pa-4">
+      <div
+        v-for="(con, i) in getConnections"
+        :key="i"
+        class="d-flex align-center mb-8"
+      >
+        <img
+          width="50"
+          height="50"
+          style="border-radius: 50%"
+          :src="getImg(con.profileImgUrl)"
+          class="mr-4"
+          alt="Image"
+        />
+        <NuxtLink :to="`/users/${con.name.split(' ').join('_')}`">
+          <b class="text-h6">{{ con.name }}</b>
+        </NuxtLink>
+      </div>
+    </v-card>
   </div>
 </template>
 
-<script lang="ts">
+<script>
 import Vue from "vue";
-// import { user } from "@/store";
+import { user } from "@/store";
 
 export default Vue.extend({
-  // data() {
-  //   return {
-  //     connections: [],
-  //   };
-  // },
-  // async created() {
-  //   const ref = await this.$fire.database.ref("/users/");
-  //   ref.on("value", (snapshot) => {
-  //     const uc = user.$single.connections
-  //       ? user.$single.connections.map((t: any) => Object.keys(t)[0])
-  //       : [];
-  //     const entries: any = Object.entries(snapshot.val());
-  //     let us = entries.filter((u: any) => {
-  //       const c = u[1].connections
-  //         ? u[1].connections.map((t: any) => Object.keys(t)[0])
-  //         : [];
-  //       return c.includes(user.$single.uid) && uc.includes(u[0]);
-  //     });
-  //     this.connections = us;
-  //   });
-  // },
-  // methods: {
-  //   getImage(img: string) {
-  //     return img
-  //       ? require(img)
-  //       : "https://storage.googleapis.com/kondzilla-wp/2020/07/marks2.jpg";
-  //   },
-  // },
+  data() {
+    return {
+      connections: [],
+      loading: true,
+    };
+  },
+  computed: {
+    getConnections() {
+      return this.connections;
+    },
+  },
+  async created() {
+    const ref = await this.$fire.database.ref(`/users/${user.$single.uid}`);
+    ref.on("value", (snapshot) => {
+      const myConnections = snapshot.val().connections || [];
+      if (myConnections.length) {
+        let cAux = [];
+        for (let i = 0; i < myConnections.length; i++) {
+          this.$fire.database
+            .ref(`users/${myConnections[i].uid}`)
+            .on("value", (snapshot) => {
+              cAux.push(snapshot.val());
+            });
+        }
+        this.connections = cAux;
+        this.loading = false;
+      }
+    });
+  },
+  methods: {
+    getImg(img) {
+      return img || require("@/assets/images/default-profile.png");
+    },
+  },
 });
 </script>
 

@@ -2,11 +2,11 @@
   <div>
     <v-card class="pa-4 mb-4">
       <v-row>
-        <v-col cols="7">
+        <v-col cols="10" md="11">
           <NuxtLink :to="`/users/${userInfo.name.split(' ').join('_')}`">
             <div class="d-flex">
               <img
-                :src="userInfo.profileImgUrl"
+                :src="getImg(userInfo.profileImgUrl)"
                 alt="Imagem de Perfil"
                 class="profile-img"
               />
@@ -19,10 +19,8 @@
             </div>
           </NuxtLink>
         </v-col>
-        <v-col cols="4">
-          <v-spacer />
-        </v-col>
-        <v-col v-if="isOwner()" cols="1">
+        <v-spacer />
+        <v-col v-if="isOwner()" cols="2" md="1" align-self="center">
           <v-menu left offset-y>
             <template #activator="{ on, attrs }">
               <v-btn icon color="primary" v-bind="attrs" v-on="on">
@@ -247,6 +245,10 @@ export default Vue.extend({
         this.userInfo.name = snapshot.val().name;
         this.userInfo.profession = snapshot.val().profession;
         this.userInfo.profileImgUrl = snapshot.val().profileImgUrl;
+        // snapshot.val().profileImgUrl
+        //   ? snapshot.val().profileImgUrl
+        //   :
+        // ("https://cdn.business2community.com/wp-content/uploads/2017/08/blank-profile-picture-973460_640.png");
       });
 
     this.$fire.database
@@ -280,6 +282,9 @@ export default Vue.extend({
       });
   },
   methods: {
+    getImg(img: string) {
+      return img || require("@/assets/images/default-profile.png");
+    },
     getUser() {
       return user.$single;
     },

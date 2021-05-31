@@ -1,21 +1,31 @@
 <template>
   <v-card class="pa-4" max-width="300">
-    <v-row column>
+    <v-row v-if="loading">
+      <v-col cols="12">
+        <v-skeleton-loader
+          type="list-item-avatar-three-line"
+        ></v-skeleton-loader>
+      </v-col>
+      <v-col cols="12">
+        <v-skeleton-loader
+          type="list-item-avatar-three-line"
+        ></v-skeleton-loader>
+      </v-col>
+      <v-col cols="12">
+        <v-skeleton-loader
+          type="list-item-avatar-three-line"
+        ></v-skeleton-loader>
+      </v-col>
+    </v-row>
+    <v-row v-else column>
       <v-col cols="12">
         <h3>Suas conexões</h3>
       </v-col>
-      <div v-if="users ? users.length > 0 : false">
-        <v-col v-for="user in users" :key="user.uid" cols="12">
+      <div v-if="connections.length">
+        <v-col v-for="user in connections" :key="user.uid" cols="12">
           <NuxtLink :to="`/users/${user.name.split(' ').join('_')}`">
             <div class="d-flex">
-              <img
-                :src="
-                  user.profileImgUrl
-                    ? user.profileImgUrl
-                    : 'https://storage.googleapis.com/kondzilla-wp/2020/07/marks2.jpg'
-                "
-                alt="Profile Connection"
-              />
+              <img :src="getImg(user.profileImgUrl)" alt="Profile Connection" />
               <div class="d-flex flex-column pl-2">
                 <h4>{{ user.name }}</h4>
                 <span v-if="user.profession">{{ user.profession }}</span>
@@ -28,7 +38,7 @@
       <v-col v-else cols="12">
         <span>Sem contatos</span>
       </v-col>
-      <v-col v-if="users ? users.length > 0 : false" cols="12">
+      <v-col v-if="connections.length" cols="12">
         <NuxtLink to="/connections">
           <v-btn width="100" color="primary" text>Ver todas</v-btn>
         </NuxtLink>
@@ -37,84 +47,41 @@
   </v-card>
 </template>
 
-<script lang="ts">
-import Vue from "vue";
+<script>
 import { user } from "@/store";
 
-export default Vue.extend({
+export default {
   data() {
     return {
-      users: [] as {
-        uid: string;
-        name: string;
-        profession: string;
-        profileImgUrl: string;
-      }[],
+      connections: [],
+      loading: true,
     };
   },
 
-  created() {
-    let cUserConnections: { uid: string; since: string }[] = [];
-    let refUser = this.$fire.database.ref(`/users/${user.$single.uid}`);
-    /* Define the type of connection */
-    type connectionType = {
-      uid: string;
-      name: string;
-      profession: string;
-      profileImgUrl: string;
-    };
-
-    /* Fetch user connections */
-    refUser.on("value", (snapshot) => {
-      this.users = [];
-      cUserConnections = snapshot.val().connections
-        ? snapshot.val().connections
-        : [];
-
-      /* Iterate over all connections of the user */
-      if (cUserConnections.length > 0) {
-        for (let user of cUserConnections) {
-          const ref = this.$fire.database.ref(`/users/${user.uid}`);
-          /* Template for Connection */
-          let connection: connectionType;
-          ref.once("value", (snapshot) => {
-            /* Create a new connection for v-for */
-            connection = {
-              uid: user.uid as string,
-              name: snapshot.val().name as string,
-              profession: snapshot.val().profession as string,
-              profileImgUrl: snapshot.val().profileImgUrl as string,
-            };
-
-            this.users.push(connection);
-          });
+  async created() {
+    const ref = await this.$fire.database.ref(`/users/${user.$single.uid}`);
+    ref.on("value", (snapshot) => {
+      const myConnections = snapshot.val().connections || [];
+      if (myConnections.length) {
+        let cAux = [];
+        for (let i = 0; i < myConnections.length; i++) {
+          this.$fire.database
+            .ref(`users/${myConnections[i].uid}`)
+            .on("value", (snapshot) => {
+              cAux.push(snapshot.val());
+            });
         }
+        this.connections = cAux;
       }
     });
+    this.loading = false;
   },
-  // created() {
-  //   let aux=[]
-  //   let connections=user.$single.connections
-  //   for(let i of connections){
-
-  //   }
-  //   const ref = this.$fire.database.ref("/users/");
-  //   ref.on("value", (snapshot) => {
-
-  //     // const uc = user.$single.connections
-  //     //   ? user.$single.connections.map((t: any) => Object.keys(t)[0])
-  //     //   : [];
-  //     const entries: any = Object.entries(snapshot.val());
-  //     let us = entries.filter((u: any) => {
-  //       const c = u[1].connections
-  //         ? u[1].connections.map((t: any) => Object.keys(t)[0])
-  //         : [];
-  //       return c.includes(user.$single.uid) && uc.includes(u[0]);
-  //     });
-  //     this.users = us;
-  //   });
-  // },
-});
+  methods: {
+    getImg(img) {
+      return img || require("@/assets/images/default-profile.png");
+    },
+  },
+};
 </script>
 
 <style scoped lang="scss">

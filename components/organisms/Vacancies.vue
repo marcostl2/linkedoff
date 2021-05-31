@@ -1,10 +1,22 @@
 <template>
-  <v-list class="pa-0" style="overflow-y: scroll" max-height="32rem">
+  <v-list class="pa-0" style="overflow-y: scroll">
     <v-list-item-group v-model="model">
-      <v-card v-for="(vacancy, i) in items" :key="i" outlined height="100%">
-        <v-list-item class="py-2" @click="$emit('clickedVacancy', vacancy)">
-          <span>
+      <v-card
+        v-for="(vacancy, i) in items"
+        :key="i"
+        outlined
+        height="100%"
+        min-width="200"
+      >
+        <v-list-item
+          class="d-flex flex-column d-md-block py-2 text-left"
+          @click="$emit('clickedVacancy', { data: { vacancy, index: i } })"
+        >
+          <b class="text-left">
             {{ vacancy.title }}
+          </b>
+          <span class="d-block d-md-none">
+            {{ vacancy.description }}
           </span>
         </v-list-item>
       </v-card>

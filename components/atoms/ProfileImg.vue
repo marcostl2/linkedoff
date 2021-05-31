@@ -10,7 +10,10 @@
       @change="handleUpload"
     />
 
-    <img :src="profileImgUrl" alt="Perfil" />
+    <img
+      :src="profileImgUrl || require('@/assets/images/default-profile.png')"
+      alt="Perfil"
+    />
     <v-btn
       v-if="!profileUID"
       class="profile-picker d-flex align-center justify-center"
@@ -52,18 +55,12 @@ export default Vue.extend({
         this.profileUID = users[0][0];
       }
 
-      this.profileImgUrl =
-        "https://storage.googleapis.com/kondzilla-wp/2020/07/marks2.jpg";
-
       if (this.profileUID) {
         /* Other persons */
         this.$fire.database
           .ref(`/users/${this.profileUID}`)
           .on("value", (snapshot) => {
-            this.profileImgUrl =
-              snapshot.val().profileImgUrl !== ""
-                ? snapshot.val().profileImgUrl
-                : this.profileImgUrl;
+            this.profileImgUrl = snapshot.val().profileImgUrl;
           });
       } else {
         this.profileImgUrl = user.$single.profileImgUrl

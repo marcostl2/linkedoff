@@ -24,5 +24,6 @@ module.exports = {
     "vue/html-self-closing": "off",
     "prefer-const": "off",
     "vue/attribute-hyphenation": "off",
+    "vue/require-default-prop": "off",
   },
 };

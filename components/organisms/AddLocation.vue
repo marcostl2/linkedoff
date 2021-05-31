@@ -2,8 +2,8 @@
   <div>
     <v-card color="grey01" elevation="0" class="pa-4">
       <h4 class="mb-4">
-        Adicione sua localização para que outras pessoas possam visualizar suas
-        vagas e seu perfil
+        Adicione sua localização para que outras pessoas possam visualizar a
+        localização de sua empresa ao buscar por vagas
       </h4>
       <button class="add-location primary--text" @click="addGeo">
         <v-icon color="primary">mdi-map-marker</v-icon>
