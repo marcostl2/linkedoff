@@ -14,7 +14,6 @@ module.exports = {
   ],
   parser: "vue-eslint-parser",
   plugins: [],
-  // add your custom rules here
   rules: {
     quotes: ["error", "double"],
     "prettier/prettier": 0,
