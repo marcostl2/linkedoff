@@ -67,27 +67,13 @@
             <ProfileAbout :bio="form.bio" />
           </v-col>
         </v-row>
-        <!-- <v-row>
-          <v-col>
+        <v-row>
+          <v-col v-if="getVacancies.length">
             <v-card color="grey01" elevation="0" class="pa-4">
-              <div class="d-flex justify-space-between mb-4">
-                <h3>Tecnologias</h3>
-              </div>
-              <v-chip
-                v-for="tech in techs"
-                :key="tech"
-                class="mr-2"
-                color="primary"
+              <div
+                v-if="form.isCompany && $route.fullPath.includes('users')"
+                class="d-flex justify-space-between mb-4"
               >
-                {{ tech }}
-              </v-chip>
-            </v-card>
-          </v-col>
-        </v-row> -->
-        <v-row v-if="form.isCompany">
-          <v-col>
-            <v-card color="grey01" elevation="0" class="pa-4">
-              <div class="d-flex justify-space-between mb-4">
                 <h3>Últimas Vagas</h3>
                 <v-btn
                   v-if="!visitProfile"
@@ -112,30 +98,23 @@
                 </v-col>
               </v-row>
               <div class="mt-6 d-flex flex-column align-center justify-center">
-                <v-btn
-                  v-if="getVacancies.length"
-                  text
-                  color="primary"
-                  class="mb-4"
-                >
-                  Visualizar todas as vagas
-                </v-btn>
                 <h4 v-if="!getVacancies.length">Nenhuma vaga no momento</h4>
-                <v-btn
-                  v-if="!isCompany && !visitProfile"
-                  block
-                  color="primary"
-                  class="mb-4"
-                >
-                  Ver empresa no mapa
-                </v-btn>
               </div>
             </v-card>
           </v-col>
-          <v-col v-if="!hasLatLong" cols="12">
+          <v-col v-if="!hasLatLong && isCompany" cols="12">
             <AddLocation />
           </v-col>
-          <v-col v-if="!visitProfile" cols="12">
+          <v-col
+            v-if="form.isCompany && $route.fullPath.includes('users')"
+            cols="12"
+          >
+            <Map :friendData="form" />
+          </v-col>
+          <v-col
+            v-else-if="isCompany && $route.fullPath.includes('profile')"
+            cols="12"
+          >
             <Map />
           </v-col>
         </v-row>
@@ -170,7 +149,11 @@ export default Vue.extend({
         profession: "",
         bio: "",
         location: "",
+        uid: "",
         isCompany: false,
+        latitude: "",
+        longitude: "",
+        vacancies: [],
       },
       techs: ["Cobol", "Python", "Javascript"],
       /* Other profiles */
@@ -183,16 +166,21 @@ export default Vue.extend({
     isCompany() {
       return user.$single.isCompany;
     },
-    getVacancies() {
-      return user.$single.vacancies && user.$single.vacancies.length > 2
-        ? user.$single.vacancies.slice(0, 2)
-        : user.$single.vacancies;
+    getVacancies(): any {
+      if (this.$route.fullPath.includes("users")) {
+        if (this.form.isCompany) return this.form.vacancies;
+        else return [];
+      } else {
+        return user.$single.vacancies && user.$single.vacancies.length > 2
+          ? user.$single.vacancies.slice(0, 2)
+          : [];
+      }
     },
     hasLatLong() {
       return user.$single.latitude && user.$single.longitude;
     },
   },
-  mounted() {
+  created() {
     this.nickname = this.$route.params.nickname;
     this.profile =
       (!this.nickname && this.$route.fullPath === "/profile") ||
@@ -216,10 +204,13 @@ export default Vue.extend({
         let cUser = users[0][1];
         this.profileUID = users[0][0];
         this.form.name = cUser.name;
+        this.form.uid = users[0][0];
         this.form.profession = cUser.profession;
         this.form.bio = cUser.bio;
         this.form.isCompany = cUser.isCompany;
         this.form.location = cUser.location;
+        this.form.latitude = cUser.latitude;
+        this.form.longitude = cUser.longitude;
         this.defaultUrl = cUser.coverUrl;
 
         this.status_connection = 0;
@@ -249,16 +240,28 @@ export default Vue.extend({
       });
     }
   },
+  mounted() {
+    if (this.form.isCompany && this.$route.fullPath.includes("users")) {
+      this.$fire.database
+        .ref(`/vacancies/${this.form.uid}`)
+        .on("value", (snapshot) => {
+          const friendVacancies = snapshot.val();
+          this.form.vacancies = friendVacancies.length
+            ? friendVacancies.slice(0, 2)
+            : [];
+        });
+    }
+  },
   methods: {
     updateInfo(e: any) {
       this.loading = !this.loading;
       this.form.profession = e.profession;
       this.form.bio = e.bio;
-      user.create({
-        ...user.$single,
-        profession: e.profession,
-        bio: e.bio,
-      } as any);
+      // user.create({
+      //   ...user.$single,
+      //   profession: e.profession,
+      //   bio: e.bio,
+      // } as any);
 
       this.$swal.fire({
         title: "Dados atualizados com sucesso!",

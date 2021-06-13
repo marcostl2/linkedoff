@@ -38,7 +38,7 @@
   </v-dialog>
 </template>
 
-<script lang="ts">
+<script>
 import Vue from "vue";
 import { user } from "@/store";
 
@@ -62,26 +62,40 @@ export default Vue.extend({
     createVacancy() {
       this.loading = !this.loading;
 
-      let newPostKey = this.$fire.database.ref().child("vacancies").push().key;
+      let vacancies = user.$single.vacancies;
+      vacancies[vacancies.length] = { ...this.form, index: vacancies.length };
+      this.$fire.database.ref(`/vacancies/${user.$single.uid}`).set(vacancies);
 
-      let payload = {
-        title: this.form.title,
-        description: this.form.description,
-      };
-
-      let updates: { [key: string]: Object } = {};
-      updates["/vacancies/" + user.$single.uid + "/" + newPostKey] = payload;
-
-      this.$fire.database.ref().update(updates);
-
-      this.loading = !this.loading;
-      this.$emit("close");
+      this.$emit("saved", { index: vacancies.length - 1 });
 
       this.$swal.fire({
         title: "Vaga criada com sucesso!",
         icon: "success",
-        timer: 1500,
+        timer: 2000,
       });
+
+      this.loading = !this.loading;
+
+      // let newPostKey = this.$fire.database.ref().child(`vacancies").push().key;
+
+      // let payload = {
+      //   title: this.form.title,
+      //   description: this.form.description,
+      // };
+
+      // let updates: { [key: string]: Object } = {};
+      // updates["/vacancies/" + user.$single.uid + "/" + newPostKey] = payload;
+
+      // this.$fire.database.ref().update(updates);
+
+      // this.loading = !this.loading;
+      // this.$emit("close");
+
+      // this.$swal.fire({
+      //   title: "Vaga criada com sucesso!",
+      //   icon: "success",
+      //   timer: 1500,
+      // });
     },
   },
 });

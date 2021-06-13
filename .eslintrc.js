@@ -23,6 +23,7 @@ module.exports = {
     "vue/multiline-html-element-content-newline": "off",
     "vue/html-self-closing": "off",
     "prefer-const": "off",
+    "vue/html-indent": "off",
     "vue/attribute-hyphenation": "off",
     "vue/require-default-prop": "off",
   },

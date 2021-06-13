@@ -1,6 +1,19 @@
 <template>
-  <v-card class="pa-4">
-    <h3 class="mb-8">Suas conexões</h3>
+  <v-card class="pa-4" min-height="500">
+    <h3 class="">Suas notificações</h3>
+    <v-divider class="my-3"></v-divider>
+    <div
+      v-if="!notifications.length"
+      style="width: 100%; min-height: 400px"
+      class="d-flex flex-column justify-center align-center"
+    >
+      <img
+        src="@/assets/images/empty.svg"
+        alt="Empty"
+        :width="$vuetify.breakpoint.mdAndUp ? 400 : 260"
+      />
+      <h4 class="text-center mt-6">Você não possui nenhuma notificação</h4>
+    </div>
     <div v-for="not in notifications" :key="not.uid" class="notication-row">
       <div class="d-flex align-center">
         <NuxtLink :to="`/users/${not.name.split(' ').join('_')}`">

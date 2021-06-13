@@ -7,7 +7,7 @@
             type="card-avatar, article, actions"
           ></v-skeleton-loader>
         </v-card>
-        <v-card v-else min-height="600" max-height="45rem" width="100%">
+        <v-card v-else min-height="600" width="100%">
           <v-row no-gutters class="pa-4">
             <v-col align-self="center">
               <h2>Confira as vagas mais quentes do momento</h2>
@@ -19,6 +19,7 @@
                 prepend-inner-icon="mdi-magnify"
                 filled
                 rounded
+                @keyup.enter="handleSearch"
                 @click:prepend-inner="handleSearch"
               ></v-text-field>
             </v-col>
@@ -31,7 +32,10 @@
               />
             </div>
             <div
-              v-if="Object.keys(getSelectedJob).length"
+              v-if="
+                Object.keys(getSelectedJob).length &&
+                $vuetify.breakpoint.mdAndUp
+              "
               class="col-12 col-md-8 py-0"
             >
               <v-card outlined class="pa-6">
@@ -59,6 +63,20 @@
           </div>
         </v-card>
       </v-container>
+      <v-dialog v-model="vacancyDialog">
+        <v-card>
+          <div class="pa-4">
+            <div style="width: 100%" class="d-flex justify-end">
+              <v-btn icon @click="vacancyDialog = !vacancyDialog">
+                <v-icon color="primary">mdi-close</v-icon>
+              </v-btn>
+            </div>
+            <p class="text-h5">{{ getSelectedJob.title }}</p>
+            <p class="text-body-1">{{ getSelectedJob.description }}</p>
+          </div>
+          <Map :friendData="getSelectedJob.company" />
+        </v-card>
+      </v-dialog>
     </client-only>
   </div>
 </template>
@@ -75,6 +93,7 @@ export default {
       jobs: [],
       search: "",
       newJobs: [],
+      vacancyDialog: false,
     };
   },
   computed: {
@@ -83,6 +102,11 @@ export default {
     },
     getSelectedJob() {
       return this.selectedJob;
+    },
+  },
+  watch: {
+    loading() {
+      this.selectedJob = this.jobs.length ? this.jobs[0] : [];
     },
   },
   created() {
@@ -99,7 +123,6 @@ export default {
           let company;
           this.$fire.database.ref(`/users/${aux[i]}`).on("value", (snap) => {
             company = snap.val();
-            // console.log(company);
 
             let companyVacancies = Object.keys(keys[aux[i]]);
             for (let j = 0; j < companyVacancies.length; j++) {
@@ -138,14 +161,13 @@ export default {
     //     this.loading = false;
     //   });
   },
-  watch: {
-    loading() {
-      this.selectedJob = this.jobs.length ? this.jobs[0] : [];
-    },
-  },
   methods: {
     handleVacancy(e) {
-      this.selectedJob = e;
+      if (this.$vuetify.breakpoint.smAndDown) {
+        this.vacancyDialog = !this.vacancyDialog;
+      }
+      this.selectedJob = e.data.vacancy;
+      this.selectedJob.index = e.data.index;
     },
     handleSearch() {
       let aux = [];

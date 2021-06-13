@@ -19,6 +19,8 @@
       ></v-skeleton-loader>
     </v-card>
     <v-card v-else class="pa-4">
+      <h3>Suas conexões</h3>
+      <v-divider class="my-4"></v-divider>
       <div
         v-for="(con, i) in getConnections"
         :key="i"

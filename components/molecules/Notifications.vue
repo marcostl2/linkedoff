@@ -1,10 +1,11 @@
 <template>
-  <v-menu v-if="notLen" offset-y :close-on-content-click="false">
+  <v-menu offset-y :close-on-content-click="false">
     <template #activator="{ on, attrs }">
       <v-btn icon v-bind="attrs" v-on="on">
-        <v-badge color="green" :content="notLen ? notLen : -1">
+        <v-badge v-if="notLen" color="green" :content="notLen">
           <v-icon>mdi-bell</v-icon>
         </v-badge>
+        <v-icon v-else>mdi-bell</v-icon>
       </v-btn>
     </template>
     <v-list dense>

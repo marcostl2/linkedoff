@@ -62,15 +62,19 @@
             </v-col>
           </v-row>
           <v-divider></v-divider>
-          <v-row class="actions mt-1">
-            <v-col>
+          <v-row class="actions my-1">
+            <v-col cols="12" class="d-flex justify-center">
               <v-btn depressed @click="like">
                 <div :class="hasLiked ? 'primary--text' : ''">
                   <v-icon>mdi-trending-up</v-icon>
                   <span class="mx-2">Stonks</span>
                 </div>
               </v-btn>
-              <v-btn depressed @click="dialogComments = !dialogComments">
+              <v-btn
+                class="ml-2"
+                depressed
+                @click="dialogComments = !dialogComments"
+              >
                 <v-icon>mdi-comment</v-icon>
                 <span class="mx-2">Comentar</span>
               </v-btn>
@@ -102,27 +106,44 @@
                   </v-btn>
                 </v-col>
               </v-row>
-              <div v-if="!fetching">
+              <div v-if="!fetching" class="pl-1">
                 <v-row
                   v-for="comment in comments"
                   :key="comment.content + new Date()"
-                  class="mx-0 mx-y mt-1"
+                  class="mx-0 my-3"
                 >
                   <v-col cols="1" class="d-flex justify-center align-center">
                     <img
                       :src="comment.user.profileImgUrl"
-                      class="comment-img"
+                      class="comment-img mr-1"
                     />
                   </v-col>
-                  <v-col cols="10" class="d-flex justify-start px-0 py-0">
-                    <span class="comment-block text-left">
-                      <div class="d-flex justify-start">
-                        <b>{{ comment.user.name }}</b>
-                      </div>
-                      {{ comment.content }}
-                    </span>
-                  </v-col>
                   <v-col
+                    cols="11"
+                    md="11"
+                    class="d-flex justify-start px-0 py-0"
+                  >
+                    <div class="comment-block">
+                      <v-row no-gutters>
+                        <v-col cols="10" align="left">
+                          <b>{{ comment.user.name }}</b>
+                          <br />
+                          <span>
+                            {{ comment.content }}
+                          </span>
+                        </v-col>
+                        <v-col cols="2" align-self="center">
+                          <v-icon
+                            v-if="compareOwner(comment.uid)"
+                            @click="removeComment(comment.content, comment.uid)"
+                          >
+                            mdi-close
+                          </v-icon>
+                        </v-col>
+                      </v-row>
+                    </div>
+                  </v-col>
+                  <!-- <v-col
                     v-if="compareOwner(comment.uid)"
                     cols="1"
                     class="d-flex justify-center align-center"
@@ -132,7 +153,7 @@
                     >
                       mdi-close
                     </v-icon>
-                  </v-col>
+                  </v-col> -->
                 </v-row>
               </div>
               <div v-else>
@@ -155,7 +176,7 @@
           </v-btn>
         </div>
         <v-tooltip color="primary">
-          <template v-slot:activator="{ on, attrs }">
+          <template #activator="{ on, attrs }">
             <div v-bind="attrs" v-on="on">
               <v-checkbox
                 v-model="form.globalScope"
@@ -186,15 +207,18 @@
           prepend-icon="mdi-camera"
           @change="loadImage"
         ></v-file-input>
-        <img
+        <v-img
           v-if="form.imageUrl"
           class="preview-img mx-auto mb-4"
           :src="form.imageUrl"
           alt="Imagem"
-        />
-        <v-btn color="primary" @click="edit">Editar</v-btn>
+        ></v-img>
+        <v-btn color="primary" @click="edit">Salvar</v-btn>
       </v-card>
     </v-dialog>
+    <v-snackbar v-model="snack" timeout="1500" color="success">
+      Editado com sucesso!
+    </v-snackbar>
   </div>
 </template>
 
@@ -212,6 +236,8 @@ export default Vue.extend({
   },
   data() {
     return {
+      snack: false,
+      snackMsg: "",
       fetching: true,
       dialogComments: false,
       dialog: false,
@@ -325,8 +351,9 @@ export default Vue.extend({
             global: this.form.globalScope,
           });
         this.dialog = !this.dialog;
+        this.snack = !this.snack;
       } catch (error) {
-        console.log(error);
+        // console.log(error);
       }
     },
     like() {
@@ -393,8 +420,8 @@ export default Vue.extend({
 }
 
 .post-img {
-  width: 100%;
-  max-height: 600px;
+  max-width: 360px;
+  max-height: 300px;
 }
 
 .post-content {
@@ -402,13 +429,13 @@ export default Vue.extend({
 }
 
 .preview-img {
-  max-width: 568px;
-  max-height: 568px;
+  max-height: 300px;
+  max-width: 200px;
 }
 
 .comment-img {
-  width: 48px;
-  height: 48px;
+  width: 32px;
+  height: 32px;
   border-radius: 64px;
 }
 
@@ -420,7 +447,14 @@ export default Vue.extend({
 
 .comment-block {
   background-color: #f0f0f0;
-  padding: 15px;
+  padding: 12px;
+  width: 100%;
   border-radius: 30px;
+}
+
+@media screen and (max-width: 800px) {
+  .post-img {
+    max-width: 200px;
+  }
 }
 </style>

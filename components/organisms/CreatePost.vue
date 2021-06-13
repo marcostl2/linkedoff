@@ -139,7 +139,6 @@ export default Vue.extend({
         this.loading = !this.loading;
       } catch (error) {
         this.loading = !this.loading;
-        console.log(error);
       }
     },
     loadImage() {

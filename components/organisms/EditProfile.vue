@@ -82,11 +82,9 @@ export default Vue.extend({
     this.form.bio = user.$single.bio;
   },
   methods: {
-    async create() {
+    create() {
       try {
-        const ref = await this.$fire.database.ref(`/users/${user.$single.uid}`);
-
-        ref.update({
+        this.$fire.database.ref(`/users/${user.$single.uid}`).update({
           profession: this.form.profession,
           bio: this.form.bio,
         });
@@ -99,7 +97,6 @@ export default Vue.extend({
 
         this.$emit("updateInfo", this.form);
       } catch (error) {
-        // console.log(error);
         throw new Error("ERRO");
       }
     },

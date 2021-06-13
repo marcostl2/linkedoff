@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-container v-if="isCompany" fluid class="pa-0">
-      <v-card width="100%">
+      <v-card width="100%" min-height="500">
         <v-row no-gutters class="pa-4">
           <v-col align-self="center">
             <h2>Suas vagas</h2>
@@ -35,10 +35,23 @@
                   </div>
                 </v-menu>
               </div>
-              <p class="text-h4">{{ selectedJob.title }}</p>
-              <p class="text-body-1">{{ selectedJob.description }}</p>
+              <p class="text-h4">{{ getJob.title }}</p>
+              <p class="text-body-1">{{ getJob.description }}</p>
             </v-card>
           </div>
+          <v-dialog v-model="vacancyDialog">
+            <v-card>
+              <div class="pa-4">
+                <div style="width: 100%" class="d-flex justify-end">
+                  <v-btn icon @click="vacancyDialog = !vacancyDialog">
+                    <v-icon color="primary">mdi-close</v-icon>
+                  </v-btn>
+                </div>
+                <p class="text-h5">{{ getJob.title }}</p>
+                <p class="text-body-1">{{ getJob.description }}</p>
+              </div>
+            </v-card>
+          </v-dialog>
         </div>
         <div
           v-else
@@ -52,7 +65,8 @@
     <NewVacancyDialog
       v-if="dialog"
       :dialog="dialog"
-      @close="handleCreatedVacancy"
+      @close="dialog = !dialog"
+      @saved="handleCreatedVacancy($event)"
     />
     <FindVacancies v-if="!isCompany" />
     <EditVacancy
@@ -74,6 +88,7 @@ export default Vue.extend({
       dialog: false,
       selectedJob: {},
       editDialog: false,
+      vacancyDialog: false,
     };
   },
   computed: {
@@ -83,6 +98,9 @@ export default Vue.extend({
     isCompany() {
       return user.$single.isCompany;
     },
+    getJob() {
+      return this.selectedJob;
+    },
   },
   created() {
     this.selectedJob =
@@ -90,16 +108,23 @@ export default Vue.extend({
   },
   methods: {
     handleVacancy(e) {
+      if (this.$vuetify.breakpoint.smAndDown) {
+        this.vacancyDialog = !this.vacancyDialog;
+      }
       this.selectedJob = e.data.vacancy;
       this.selectedJob.index = e.data.index;
     },
-    handleCreatedVacancy() {
+    handleCreatedVacancy(e) {
       this.dialog = !this.dialog;
-      this.selectedJob = this.getItems[this.getItems.length - 1];
+      this.selectedJob = this.getItems[e.index];
+      this.selectedJob.index = e.index;
     },
     handleDeleteVacancy() {
-      let vacancies = [...user.$single.vacancies];
+      let vacancies = JSON.parse(JSON.stringify(user.$single.vacancies));
       vacancies.splice(this.selectedJob.index, 1);
+      vacancies.forEach((val, index) => {
+        val.index = index;
+      });
       this.$fire.database.ref(`/vacancies/${user.$single.uid}`).set(vacancies);
 
       this.$swal.fire({
@@ -107,6 +132,7 @@ export default Vue.extend({
         icon: "success",
         timer: 2000,
       });
+      user.create({ ...user.$single, vacancies });
 
       this.selectedJob =
         this.getItems.length > 0 ? { ...this.getItems[0], index: 0 } : {};

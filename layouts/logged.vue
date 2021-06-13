@@ -13,7 +13,7 @@
       <NavBar @handleMenu="drawer = !drawer" />
     </div>
     <main>
-      <v-container fluid style="max-width: 1160px" ;>
+      <v-container fluid style="max-width: 900px" ;>
         <v-row>
           <v-col cols="12" md="9">
             <Nuxt />
@@ -148,6 +148,6 @@ main {
 }
 
 .wrapper {
-  max-width: 1160px !important;
+  max-width: 900px !important;
 }
 </style>
