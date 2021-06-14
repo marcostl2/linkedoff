@@ -3,7 +3,7 @@
     ref="map"
     style="height: 200px; width: 100%"
     :zoom="16"
-    :options="{ scrollWheelZoom: 'center', dragging: false }"
+    :options="{ scrollWheelZoom: 'center' }"
     :center="[company.latitude, company.longitude]"
     @ready="repaintMap"
   >

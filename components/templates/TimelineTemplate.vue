@@ -47,11 +47,7 @@ export default Vue.extend({
         const posts = users[userUID];
         const postKeys = Object.keys(posts);
         postKeys.forEach((postKey) => {
-          if (
-            posts[postKey].global ||
-            userUID === user.$single.uid ||
-            user.$single.connections.map((x) => x.uid).includes(userUID)
-          ) {
+          if (posts[postKey].global || userUID === user.$single.uid) {
             this.posts.push({
               uid: postKey,
               owner: userUID,

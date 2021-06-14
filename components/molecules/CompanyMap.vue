@@ -109,6 +109,11 @@ export default Vue.extend({
         icon: "success",
         timer: 1500,
       });
+      user.create({
+        ...user.$single,
+        latitude: this.coords[0],
+        longitude: this.coords[1],
+      });
     },
     repaintMap() {
       this.$nextTick(() => {

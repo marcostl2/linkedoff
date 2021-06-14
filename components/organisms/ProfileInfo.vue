@@ -112,7 +112,9 @@
             <Map :friendData="form" />
           </v-col>
           <v-col
-            v-else-if="isCompany && $route.fullPath.includes('profile')"
+            v-else-if="
+              isCompany && $route.fullPath.includes('profile') && hasLatLong
+            "
             cols="12"
           >
             <Map />

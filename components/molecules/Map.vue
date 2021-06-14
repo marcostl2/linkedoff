@@ -69,6 +69,9 @@
                 <v-btn color="success" :loading="loading" @click="handleSubmit">
                   Salvar
                 </v-btn>
+                <v-btn color="warning" :loading="loading" @click="handleRemove">
+                  Remover
+                </v-btn>
                 <v-btn color="error" @click="edit = !edit">Cancelar</v-btn>
               </div>
             </v-col>
@@ -173,6 +176,26 @@ export default Vue.extend({
       } catch (error) {
         // console.log(error);
       }
+    },
+    handleRemove() {
+      this.loading = !this.loading;
+      this.$fire.database.ref(`/users/${user.$single.uid}`).update({
+        latitude: "",
+        longitude: "",
+      });
+      this.$swal.fire({
+        title: "Localização removida com sucesso!",
+        icon: "success",
+        timer: 2000,
+      });
+      this.edit = !this.edit;
+      this.coords = this.newCoords;
+      this.loading = !this.loading;
+      user.create({
+        ...user.$single,
+        latitude: "",
+        longitude: "",
+      });
     },
   },
 });
