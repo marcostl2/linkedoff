@@ -9,7 +9,9 @@
       </v-btn>
     </template>
     <v-list dense>
-      <v-subheader>Notificações</v-subheader>
+      <v-subheader>
+        <NuxtLink to="/notifications">Ver Notificações</NuxtLink>
+      </v-subheader>
       <v-list-item-group v-model="notifications" color="primary">
         <div v-for="not in notifications" :key="not.uid" class="notication-row">
           <v-row>

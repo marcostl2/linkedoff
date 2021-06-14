@@ -1,6 +1,6 @@
 <template>
   <v-dialog :value="dialog" max-width="800">
-    <v-card class="py-4 px-sm-8">
+    <v-card class="py-4 px-sm-8" style="z-index: 30000 !important">
       <v-container>
         <v-row>
           <v-col cols="12">
@@ -104,4 +104,8 @@ export default Vue.extend({
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+.v-dialog__content {
+  z-index: 20000 !important;
+}
+</style>

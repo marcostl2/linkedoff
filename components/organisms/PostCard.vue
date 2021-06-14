@@ -85,7 +85,10 @@
               <v-divider></v-divider>
               <v-row class="mx-0 my-0">
                 <v-col cols="1" class="d-flex justify-center align-center">
-                  <img :src="getUser().profileImgUrl" class="comment-img" />
+                  <img
+                    :src="getImg(getUser.profileImgUrl)"
+                    class="comment-img"
+                  />
                 </v-col>
 
                 <v-col cols="10">
@@ -259,6 +262,11 @@ export default Vue.extend({
       },
     };
   },
+  computed: {
+    getUser() {
+      return user.$single;
+    },
+  },
   mounted() {
     this.comments = [];
     this.form.content = this.post.content;
@@ -310,9 +318,6 @@ export default Vue.extend({
   methods: {
     getImg(img: string) {
       return img || require("@/assets/images/default-profile.png");
-    },
-    getUser() {
-      return user.$single;
     },
     isOwner() {
       return this.post.owner === user.$single.uid;
