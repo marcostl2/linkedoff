@@ -8,22 +8,40 @@ export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
     titleTemplate: "LinkedOff",
-    title: "linkedOff",
+    title: "LinkedOff",
     htmlAttrs: {
       lang: "en",
     },
     meta: [
       { charset: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { hid: "description", name: "description", content: "" },
+      {
+        hid: "description",
+        property: "description",
+        content: "A maior rede social para conexões entre desenvolvedores",
+      },
+      {
+        hid: "og:title",
+        property: "og:title",
+        content: "LinkedOff",
+      },
+      {
+        hid: "og:description",
+        property: "og:description",
+        content: "A maior rede social para conexões entre desenvolvedores",
+      },
+      {
+        hid: "google-site-verification",
+        property: "google-site-verification",
+        content: "kb-8H_to9ZVMY_3N-A1aVkVqt3PJaCWE_-jATK2fQ3g",
+      },
     ],
     link: [
       { rel: "icon", type: "image/x-icon", href: "/favicon.png" },
       { rel: "preconnect", href: "https://fonts.gstatic.com" },
       {
         rel: "stylesheet",
-        href:
-          "https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap",
       },
     ],
   },
@@ -33,7 +51,8 @@ export default {
   },
 
   env: {
-    NUXT_APP_MAPBOX_TOKEN: "pk.eyJ1IjoibWFyY29zdGwyIiwiYSI6ImNrZzc5ODJiczA1NHQycW53bm4xYTQyZW0ifQ.oVKrPl790Dca194Au2dmjA",
+    NUXT_APP_MAPBOX_TOKEN:
+      "pk.eyJ1IjoibWFyY29zdGwyIiwiYSI6ImNrZzc5ODJiczA1NHQycW53bm4xYTQyZW0ifQ.oVKrPl790Dca194Au2dmjA",
   },
 
   // Initialize Firebase
